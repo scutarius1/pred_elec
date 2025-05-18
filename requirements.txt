@@ -9,6 +9,7 @@ gdown==5.2.0
 plotly
 joblib
 lightgbm
+sklearn
 
 # Pour lecture .csv lourds avec encodage
 openpyxl
