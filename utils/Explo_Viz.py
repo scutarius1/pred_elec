@@ -160,8 +160,9 @@ def aggregate_hourly_data(df_energie):
 @st.cache_data
 def load_temp():
     """Télécharge et prétraite les données depuis Google Drive."""
-    file_id = "1GMxi5h5sX0qaiWVayYqgdwcW-BLbZVnY"  # Ton ID de fichier extrait
+    file_id = "1kkXr5HxEA5yl_9Qj38wb2Oroqkji4TLv"  # Ton ID de fichier extrait
     url = f"https://drive.google.com/uc?id={file_id}"  # Lien de téléchargement direct
+
     output = "temperature-quotidienne-regionale.csv"
     gdown.download(url, output, quiet=False)
     df_temp = pd.read_csv(output, sep=';')
