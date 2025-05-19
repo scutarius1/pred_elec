@@ -10,6 +10,7 @@ plotly
 joblib
 lightgbm
 scikit-learn
+Pillow
 
 # Pour lecture .csv lourds avec encodage
 openpyxl
