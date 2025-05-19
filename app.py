@@ -3,9 +3,12 @@ import streamlit.components.v1 as components
 import io
 import pandas as pd
 import matplotlib.pyplot as plt
-#import Explo_Viz 
-from utils import Explo_Viz
 import gdown
+
+#import Explo_Viz , considération data cleaning & seeking
+
+from utils import Explo_Viz
+from utils import divers_processing
 
 # #########################
 # ⚙️ LOAD & PREPROCESS ⚙️ #
@@ -30,7 +33,7 @@ def load_and_preprocess_data():
 def main():
     #st.title("Prédiction de Consommation Electrique en France")
     st.sidebar.title("⚡⚡ Prédiction Conso Electrique en France ⚡⚡")
-    pages = ["📖 Contexte et Datasets", "📊 Production VS Consommation", "📉 Variabilité de la consommation", " 🤖 Modélisation"]
+    pages = ["📖 Contexte et Datasets", "📊 Production VS Consommation", "📉 Variabilité de la consommation", " 🤖 Modélisation", "Divers Processing"]
     page = st.sidebar.radio("Aller vers", pages)
     #st.sidebar.title("Modélisation")
     #st.sidebar.page_link("pages/modelisation.py", label="Processing et Modélisation")
@@ -235,6 +238,16 @@ def main():
         st.write("### Lien vers la page Notion dédiée a la construction d'un dataset de températures futures ")
         notion_url = "https://www.notion.so/Projet-Energie-Temp-ratures-Futures-1c1725f38aa58043b463e07b4a6d21fa?pvs=4"
         st.markdown(f"Vous pouvez consulter notre page Notion en cliquant sur ce lien : [Page Notion]({notion_url})")        
+
+
+#################################
+# ⚙️     DIVERS PROCESSING        ⚙️#
+#################################
+
+    elif page == pages[4]:
+        st.header("Divers Processing")
+        divers_processing.drias()
+
 
 if __name__ == "__main__":
     main()
