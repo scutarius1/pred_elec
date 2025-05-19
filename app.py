@@ -33,7 +33,7 @@ def load_and_preprocess_data():
 def main():
     #st.title("Prédiction de Consommation Electrique en France")
     st.sidebar.title("⚡⚡ Prédiction Conso Electrique en France ⚡⚡")
-    pages = ["📖 Contexte et Datasets", "📊 Production VS Consommation", "📉 Variabilité de la consommation", " 🤖 Modélisation", "Divers Processing"]
+    pages = ["📖 Contexte et Datasets", "📊 Production VS Consommation", "📉 Variabilité de la consommation", " 🤖 Modélisation", "🪛 Divers Processing"]
     page = st.sidebar.radio("Aller vers", pages)
     #st.sidebar.title("Modélisation")
     #st.sidebar.page_link("pages/modelisation.py", label="Processing et Modélisation")
@@ -72,7 +72,9 @@ def main():
         st.write(""" Le data set principal est structuré de la sorte(.sample .describe .info)""") 
 
         st.dataframe(df_cons_preprocessed.sample(20))  # Utiliser le dataframe prétraité
+        st.write("---")
         st.dataframe(df_cons_preprocessed.describe())
+        st.write("---")
         # Capturer et afficher df_cons_preprocessed.info() directement avec st.text
         buffer = io.StringIO()
         df_cons_preprocessed.info(buf=buffer)
@@ -228,16 +230,14 @@ def main():
               
         st.markdown("""La métrique **MAPE (Mean Absolute Percentage Error)** est notre métrique principale car elle est facilement interprétable et comparable avec d’autres modèles.
                  Nous cherchons d’une part à pénaliser les grandes erreurs compte tenu de l’enjeu de prédiction de consommation au plus juste (**RMSE** faible), 
-                 tout en pouvant comparer facilement nos différents modèles sur la base de % de variation (MAPE). Enfin, la qualité globale du modèle doit aussi être élevée pour tenir compte de manière équilibrée des spécificités régionales (**Score R2**). 
-                    Pour couvrir l’ensemble des KPI pertinents sur ce problème de régression nous allons donc récupérer chacun des indicateurs type: 
-
-                    - Erreurs absolues et relatives (**MAE, MAPE**)
-                    - Erreurs quadratiques (**MSE, RMSE**)
-                    - Qualité d’ajustement (**R² Score**)""")
-            
-        st.write("### Lien vers la page Notion dédiée a la construction d'un dataset de températures futures ")
-        notion_url = "https://www.notion.so/Projet-Energie-Temp-ratures-Futures-1c1725f38aa58043b463e07b4a6d21fa?pvs=4"
-        st.markdown(f"Vous pouvez consulter notre page Notion en cliquant sur ce lien : [Page Notion]({notion_url})")        
+                 tout en pouvant comparer facilement nos différents modèles sur la base de % de variation (MAPE). Enfin, la qualité globale du modèle doit aussi être élevée pour tenir compte de manière équilibrée des spécificités régionales (**Score R2**).""") 
+        
+        st.info("Pour couvrir l’ensemble des KPI pertinents sur ce problème de régression nous allons donc récupérer chacun des indicateurs type: "
+        "- Erreurs absolues et relatives (**MAE, MAPE**)"
+        "- Erreurs quadratiques (**MSE, RMSE**)"
+        "- Qualité d’ajustement (**R² Score**)" \
+        "")
+   
 
 
 #################################

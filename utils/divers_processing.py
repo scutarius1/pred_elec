@@ -19,10 +19,8 @@ def drias():
     st.subheader("🌡️ Données Climatiques Futures pour la Simulation")
 
     st.markdown("""
-    Pour tester notre modèle avec des **données futures réalistes**, nous avons dû récupérer une simulation des **températures régionales**, 
-    à la **maille fine** et sur **plusieurs années**.
-
-    Après exploration, nous avons identifié sur le portail de la [**DRIAS**](https://www.drias-climat.fr) un catalogue de données de **simulations climatiques** 
+    Pour tester notre modèle avec des **données futures réalistes**, nous devons récupérer une simulation des **températures régionales**, 
+    à la **maille fine** et sur **plusieurs années**. Après exploration, nous avons identifié sur le portail de la [**DRIAS**](https://www.drias-climat.fr) un catalogue de données de **simulations climatiques** 
     pouvant répondre à ce besoin.
 
     ---
