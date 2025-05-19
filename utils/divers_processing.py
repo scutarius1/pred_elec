@@ -27,7 +27,7 @@ def drias():
     ---
     """)
 
-    st.image(scenarios_climatiques_regions_france, caption="Simulation des températures régionales", use_column_width=True)
+    #st.image(scenarios_climatiques_regions_france, caption="Simulation des températures régionales", use_column_width=True)
     
     st.markdown("### 🎯 Hypothèses et Méthodologie retenues")
     
