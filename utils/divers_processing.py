@@ -6,8 +6,14 @@ from PIL import Image
 
 def drias():
 
-    Carto_safran = Image.open("../pictures/Carto_safran.png")
-    scenarios_climatiques_regions_france = Image.open("../pictures/scenarios_climatiques_regions_france.png")
+    #base_dir = os.path.dirname(os.path.abspath(__file__))  # chemin absolu du fichier divers_processing.py
+    #image_path = os.path.join(base_dir, '..', 'pictures', 'Carto_safran.png')
+
+    #if not os.path.exists(image_path):
+     #   raise FileNotFoundError(f"Image introuvable à ce chemin : {image_path}")
+    
+    #Carto_safran = Image.open("../pictures/Carto_safran.png")
+    #scenarios_climatiques_regions_france = Image.open("../pictures/scenarios_climatiques_regions_france.png")
 
     st.subheader("🌡️ Données Climatiques Futures pour la Simulation")
 
