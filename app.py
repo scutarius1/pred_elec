@@ -246,9 +246,9 @@ def main():
 
     elif page == pages[4]:
         st.title("Challenges Preprocessing ")
-        divers_processing.drias()
         divers_processing.cleaning()
-
+        divers_processing.drias()
+        
 
 if __name__ == "__main__":
     main()

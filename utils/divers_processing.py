@@ -131,6 +131,7 @@ def drias():
                 st.warning("❌ L’image 'dataset_temperatures_futures.png' est introuvable dans le dossier `pictures/`.")
 
     st.write("---")
+
     st.write("La projection sur plusieurs années  semble plausible")
     ###### image ######
     img = load_image("Tendance2025_2035.png")
@@ -160,10 +161,27 @@ def cleaning():
 
     st.markdown("""
                 Le Datacleaning : a été la part la plus importante en terme de préprocessing. 
-                En effet Pour avoir la timeserie la plus longue possible, nous avons inclu dans le dataset les données de consommation les plus récentes possible. 
-                Soit de janvier 2023 à décembre 2024. Problème : ces données récentes n'ayant pas été consolidées, par les équipes Data de RTE contrairement à notre dataset de base. 
-                D'où le besoin de nettoyage des valeurs aberrantes après la concatenation.""")
-    st.markdown("##### Outliers ?")
+                En effet Pour avoir la timeserie la plus longue, nous avons inclu dans le dataset les données de consommation les plus récentes possible. 
+                Problème : ces données (de janvier 2023 à décembre 2024) n'ayant pas été consolidées par les équipes Data de RTE contrairement à notre dataset de base. 
+                nous devons procéder à un nettoyage des valeurs aberrantes après concatenation.""")
+    
+    ###### image ######
+    img = load_image("consolide_vs_non.png")
+    if img:
+            st.image(img, caption="constate de l’impact de la consolidation dans la ‘propreté’ du dataset", use_container_width=True)
+    else:
+            st.warning("❌ L’image est introuvable dans le dossier `pictures/`.")
+
+    img = load_image("outliers_eco2mix_temps_reel.png")
+    if img:
+            st.image(img, caption="outliers manifestement visibles", use_container_width=True)
+    else:
+            st.warning("❌ L’image est introuvable dans le dossier `pictures/`.")
+    
+    ##################
+    
+
+    st.markdown("##### Gestion des Outliers ?")
     st.markdown("""
                 Concrètement à moins d'un Black out sur 100% d'un territoire, une valeur exceptionnellement basse ou nulle sur une courte durée, 
                 c'est très probablement une erreur matérielle. De même pour des valeurs anormalement élevée.
