@@ -7,7 +7,7 @@ import streamlit as st
 from utils.assets_loader import load_image
 
 def drias():
-    st.subheader("🌡️ Données Climatiques Futures pour la Simulation")
+    st.header("🌡️ Données Climatiques Futures pour la Simulation")
 
     st.markdown("""
     Pour tester notre modèle avec des **données futures réalistes**, nous devons récupérer une simulation des **températures régionales**, 
@@ -19,9 +19,12 @@ def drias():
     st.info("Cet exercice de simulation des températures futures vise à illustrer des méthodes de traitement de données " \
     "et nous permettre de mobiliser notre modèle de prédiction pour simuler une future consommation électrique." \
     "" \
-    "- Les **prévisions climatiques** sont issues de **modèles complexes** qui comportent des **incertitudes** importantes." \
-    "- Les **données consolidées datent de 2020**, ce qui peut introduire un **biais temporel**. " \
-    "- Pour associer les données climatiques à nos **régions administratives**, nous avons utilisé une méthode triviale de **regroupement par encadrement** des **coordonnées géographiques**. " \
+    
+    "   - Les **prévisions climatiques** sont issues de **modèles complexes** qui comportent des **incertitudes** importantes." \
+    
+    "   - Les **données consolidées datent de 2020**, ce qui peut introduire un **biais temporel**. " \
+    
+    "   - Pour associer les données climatiques à nos **régions administratives**, nous avons utilisé une méthode triviale de **regroupement par encadrement** des **coordonnées géographiques**. " \
     "")
 
     st.markdown("""
