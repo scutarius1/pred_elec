@@ -42,7 +42,7 @@ def drias():
 
     # COL NETCDF
     with col1:
-        st.markdown("#### 🧩 De NetCDF à CSV exploitable...")
+        st.markdown("#### 🧩 De .NetCDF à un .csv exploitable...")
 
         code = '''
     import xarray as xr
@@ -146,7 +146,7 @@ def cleaning():
                 Ci-après quelques exemples visuels des valeurs anormales que l'on a du retraiter.
                 Une fois les régions et périodes problématiques identifiées (avec l'aide de Plotly qui a été hyper pratique ), le remplacement des outliers s'est fait :
                 - Par **Interpolation linéaire** pour les valeur nulles et les rupture manifestes de tendances
-                - Par **imputation (par la moyenne historique)** principalement pour les valeurs anormalement basses. 
+                - Par **imputation** (par la **moyenne historique**) principalement pour les valeurs anormalement basses. 
                 La méthode étant la fixation d'un seuil historique minimum avec une marge +10%, puis remplacement des outlier depassant ce seuil 
                 sur la plage temporelle concernée par la moyenne historique de cette même plage.
 
