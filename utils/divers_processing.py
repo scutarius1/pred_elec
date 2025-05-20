@@ -116,21 +116,36 @@ def drias():
                 st.warning("❌ L’image 'dataset_temperatures_futures.png' est introuvable dans le dossier `pictures/`.")
 
     st.write("---")
-
     st.markdown("### ⚠️ Avertissement")
-
     st.info("Cet exercice de simulation des températures futures vise uniquement à illustrer des méthodes de traitement de données " \
     "et nous permettre de mobiliser notre modèle de prédiction et simuler de manière triviale la future consommation électrique.")  
-
     st.markdown("""
     - ⚠️ Les **prévisions climatiques** sont issues de **modèles complexes** qui comportent des **incertitudes** importantes.  
     - 📅 Les **données consolidées datent de 2020**, ce qui peut introduire un **biais temporel**.  
     - 🗺️ Pour associer les données climatiques à nos **régions administratives**, nous avons utilisé une méthode simple de **regroupement par encadrement** 
       des **coordonnées géographiques**.
-
     ---
     """)
 
-    st.markdown("""Pour aboutir finalement à notre dataset de température
-                Comparaison des évolution des courbes de température moyenne entre notre Dataset consolidé dédié au Machine Learning et ce df ‘Futur’.  
-                Ci-après, Test pour l’année 2020 (3ème année la plus chaude depuis 1900) VS prévisions 2026""")
+    #PARTIE CLEANING ECO2 MIX
+def cleaning():
+
+    st.markdown("### ⚠️ Data Cleaning Dataset Principal")
+
+    st.markdown("""
+                Le Datacleaning : a été la part la plus importante en terme de préprocessing. 
+                En effet Pour avoir la timeserie la plus longue possible, nous avons inclu dans le dataset les données de consommation les plus récentes possible. 
+                Soit de janvier 2023 à décembre 2024. Problème : ces données récentes n'ayant pas été consolidées, par les équipes Data de RTE contrairement à notre dataset de base. 
+                D'où le besoin de nettoyage des valeurs aberrantes après la concatenation.""")
+    st.markdown("##### ⚠️ Outliers ?")
+    st.markdown("""
+                Concrètement à moins d'un Black out sur 100% d'un territoire, une valeur exceptionnellement basse ou nulle sur une courte durée, 
+                c'est très probablement une erreur matérielle. De même pour des valeurs anormalement élevée.
+                Ci-après quelques exemples visuels des valeurs anormales que l'on a du retraiter.
+                Une fois les régions et périodes problématiques identifiées (avec l'aide de Plotly qui a été hyper pratique ), le remplacement des outliers s'est fait :
+                - Par **Interpolation linéaire** pour les valeur nulles et les rupture manifestes de tendances
+                - Par imputation (par la moyenne historique) principalement pour les valeurs anormalement basses. 
+                La méthode étant la fixation d'un seuil historique minimum avec une marge +10%, puis remplacement des outlier depassant ce seuil 
+                sur la plage temporelle concernée par la moyenne historique de cette même plage.
+
+                """)

@@ -38,7 +38,7 @@ def main():
     #st.sidebar.title("Modélisation")
     #st.sidebar.page_link("pages/modelisation.py", label="Processing et Modélisation")
     st.sidebar.title("Simulateur")
-    st.sidebar.page_link("pages/simulateur.py", label="📈 Prédiction Régionnale Conso Future")
+    st.sidebar.page_link("pages/simulateur.py", label="📈 Prédictions Régionales Futures")
 
     df_cons_preprocessed, df_energie, df_temp = load_and_preprocess_data() # AJOUTE
 
@@ -245,8 +245,9 @@ def main():
 #################################
 
     elif page == pages[4]:
-        st.header("Divers Processing")
+        st.header("Quelques challenges de Pré-Processing ")
         divers_processing.drias()
+        divers_processing.cleaning()
 
 
 if __name__ == "__main__":
