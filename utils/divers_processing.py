@@ -156,9 +156,9 @@ def drias():
 # ⚙️ DATACLEANING ECO2 MIX    ⚙️#
 #################################
 def cleaning():
-
-    st.markdown("###  ⚙️ Data Cleaning ✂️ Dataset Principal")
-
+    
+    st.header("⚙️ Data Cleaning ✂️ Dataset Principal")
+  
     st.markdown("""
                 Le Datacleaning : a été la part la plus importante en terme de préprocessing. 
                 En effet Pour avoir la timeserie la plus longue, nous avons inclu dans le dataset les données de consommation les plus récentes possible. 
