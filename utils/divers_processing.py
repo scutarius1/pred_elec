@@ -80,8 +80,7 @@ def drias():
     # COL RECOUPEMENT
     with col2:
         with st.container():
-            st.write("")
-            st.write("")
+            st.write(""), st.write(""), st.write(""),st.write("")
             st.write("Nous passons d’un fichier : netCDF > df de près de **84 M de lignes** (😅)")
 
             ###### image ######
@@ -94,7 +93,7 @@ def drias():
             ###### image ######
 
     st.write("")
-    
+
     col3, col4 = st.columns([1, 1.2])
 
     with col3:
@@ -132,7 +131,25 @@ def drias():
                 st.warning("❌ L’image 'dataset_temperatures_futures.png' est introuvable dans le dossier `pictures/`.")
 
     st.write("---")
+    st.write("La projection sur plusieurs années  semble plausible")
+    ###### image ######
+    img = load_image("Tendance2025_2035.png")
+    if img:
+            st.image(img, use_container_width=True)
+    else:
+            st.warning("❌ L’image est introuvable dans le dossier `pictures/`.")
+    ##################
 
+    st.write("Les variations des températures moyennes sur une année semblent correctes. " \
+    "Ici 4 régions sont testés sur 2026 en comparaison de 2020 - qui a été une des années les plus chaudes depuis plus d'un siècle ")
+    ###### image ######
+    img = load_image("comparatif_2020_2026.png")
+    if img:
+            st.image(img, caption="test sur 4 régions", use_container_width=True)
+    else:
+            st.warning("❌ L’image est introuvable dans le dossier `pictures/`.")
+    ##################
+    st.write("Let's go pour la modélisation 🚀 ")
 
 #################################
 # ⚙️ DATACLEANING ECO2 MIX    ⚙️#

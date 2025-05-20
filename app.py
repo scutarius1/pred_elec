@@ -245,7 +245,7 @@ def main():
 #################################
 
     elif page == pages[4]:
-        st.header("Challenges Preprocessing ")
+        st.title("Challenges Preprocessing ")
         divers_processing.drias()
         divers_processing.cleaning()
 
