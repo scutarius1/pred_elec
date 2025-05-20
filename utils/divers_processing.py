@@ -22,7 +22,7 @@ def drias():
     st.markdown("""
     Pour tester notre modèle avec des **données futures réalistes**, nous devons récupérer une simulation des **températures régionales**, 
     à la **maille fine** et sur **plusieurs années**. Après exploration, nous avons identifié sur le portail de la [**DRIAS**](https://www.drias-climat.fr) un catalogue de données de **simulations climatiques** 
-    au format [**NetCDF**] (https://fr.wikipedia.org/wiki/NetCDF) pouvant répondre à ce besoin.
+    au format [**NetCDF**](https://fr.wikipedia.org/wiki/NetCDF) pouvant répondre à ce besoin.
 
     Choix d’un Scénario d’émission de Co2. Au format NetCDF
 
