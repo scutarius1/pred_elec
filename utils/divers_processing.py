@@ -28,7 +28,7 @@ def drias():
     "")
 
     st.markdown("""
-    <div style="background-color: #182C43; padding: 1em; border-radius: 5px; border-left: 5px solid #91caff;">
+    <div style="background-color: #182C43 ; padding: 1em; border-radius: 5px; border-left: 5px solid #91caff;">
     <h4>⚠️ Avertissement</h4>
     <p><strong>Cet exercice de simulation des températures futures vise à illustrer des méthodes de traitement de données et nous permettre de mobiliser notre modèle de prédiction pour simuler une future consommation électrique.</strong></p>
     <ul>
