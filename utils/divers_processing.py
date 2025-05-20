@@ -15,18 +15,24 @@ def drias():
     au format [**NetCDF**](https://fr.wikipedia.org/wiki/NetCDF) pouvant répondre à ce besoin.
     """)
 
-    st.markdown("### ⚠️ Avertissement")
+    st.markdown("#### ⚠️ Avertissement")
     st.info("Cet exercice de simulation des températures futures vise à illustrer des méthodes de traitement de données " \
-    "et nous permettre de mobiliser notre modèle de prédiction pour simuler de manière la future consommation électrique.")  
+    "et nous permettre de mobiliser notre modèle de prédiction pour simuler une future consommation électrique." \
+    "" \
+    "- Les **prévisions climatiques** sont issues de **modèles complexes** qui comportent des **incertitudes** importantes." \
+    "- Les **données consolidées datent de 2020**, ce qui peut introduire un **biais temporel**. " \
+    "- Pour associer les données climatiques à nos **régions administratives**, nous avons utilisé une méthode triviale de **regroupement par encadrement** des **coordonnées géographiques**. " \
+    "")
+
     st.markdown("""
-    - ⚠️ Les **prévisions climatiques** sont issues de **modèles complexes** qui comportent des **incertitudes** importantes.  
-    - 📅 Les **données consolidées datent de 2020**, ce qui peut introduire un **biais temporel**.  
-    - 🗺️ Pour associer les données climatiques à nos **régions administratives**, nous avons utilisé une méthode triviale de **regroupement par encadrement** 
+    - Les **prévisions climatiques** sont issues de **modèles complexes** qui comportent des **incertitudes** importantes.  
+    - Les **données consolidées datent de 2020**, ce qui peut introduire un **biais temporel**.  
+    - Pour associer les données climatiques à nos **régions administratives**, nous avons utilisé une méthode triviale de **regroupement par encadrement** 
       des **coordonnées géographiques**.
     ---
     """)            
 
-    st.markdown(" ####Choix d’un Scénario d’émission de Co2") 
+    st.markdown(" #### Choix d’un Scénario d’émission de Co2") 
     st.markdown("""
     - RCP2.6 : Scénario avec une politique climatique visant à faire baisser les concentrations en CO2
     - **RCP4.5** : Scénario avec une politique climatique visant à stabiliser les concentrations en CO2 (Scénario retenu)
