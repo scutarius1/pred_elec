@@ -92,8 +92,10 @@ def drias():
     st.code(code, language='python')
 
     st.markdown("### ⚠️ Avertissement")
+
     st.info("Cet exercice de simulation des températures futures vise uniquement à illustrer des méthodes de traitement de données " \
-    "et nous permettre de mobiliser notre modèle de prédiction et simuler de manière triviale la future consommation électrique.")    
+    "et nous permettre de mobiliser notre modèle de prédiction et simuler de manière triviale la future consommation électrique.")  
+      
     st.markdown("""
     - ⚠️ Les **prévisions climatiques** sont issues de **modèles complexes** qui comportent des **incertitudes** importantes.  
     - 📅 Les **données consolidées datent de 2020**, ce qui peut introduire un **biais temporel**.  
