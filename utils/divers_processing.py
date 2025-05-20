@@ -28,6 +28,18 @@ def drias():
     "")
 
     st.markdown("""
+    <div style="background-color: #e0f3ff; padding: 1em; border-radius: 5px; border-left: 5px solid #91caff;">
+    <h4>⚠️ Avertissement</h4>
+    <p><strong>Cet exercice de simulation des températures futures vise à illustrer des méthodes de traitement de données et nous permettre de mobiliser notre modèle de prédiction pour simuler une future consommation électrique.</strong></p>
+    <ul>
+    <li>Les <strong>prévisions climatiques</strong> sont issues de <strong>modèles complexes</strong> qui comportent des <strong>incertitudes</strong> importantes.</li>
+    <li>Les <strong>données consolidées datent de 2020</strong>, ce qui peut introduire un <strong>biais temporel</strong>.</li>
+    <li>Pour associer les données climatiques à nos <strong>régions administratives</strong>, nous avons utilisé une méthode triviale de <strong>regroupement par encadrement</strong> des <strong>coordonnées géographiques</strong>.</li>
+    </ul>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
     - Les **prévisions climatiques** sont issues de **modèles complexes** qui comportent des **incertitudes** importantes.  
     - Les **données consolidées datent de 2020**, ce qui peut introduire un **biais temporel**.  
     - Pour associer les données climatiques à nos **régions administratives**, nous avons utilisé une méthode triviale de **regroupement par encadrement** 
