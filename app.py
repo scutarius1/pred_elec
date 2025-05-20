@@ -33,7 +33,7 @@ def load_and_preprocess_data():
 def main():
     #st.title("Prédiction de Consommation Electrique en France")
     st.sidebar.title("⚡⚡ Prédiction Conso Electrique en France ⚡⚡")
-    pages = ["📖 Contexte et Datasets", "📊 Production VS Consommation", "📉 Variabilité de la consommation", " 🤖 Modélisation", "🪛 Divers Processing"]
+    pages = ["📖 Contexte et Datasets", "📊 Production VS Consommation", "📉 Variabilité de la consommation", " 🤖 Modélisation", "✂️ Divers Prétraitement des données🪛"]
     page = st.sidebar.radio("Aller vers", pages)
     #st.sidebar.title("Modélisation")
     #st.sidebar.page_link("pages/modelisation.py", label="Processing et Modélisation")
