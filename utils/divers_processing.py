@@ -15,18 +15,6 @@ def drias():
     au format [**NetCDF**](https://fr.wikipedia.org/wiki/NetCDF) pouvant répondre à ce besoin.
     """)
 
-    st.markdown("#### ⚠️ Avertissement")
-    st.info("Cet exercice de simulation des températures futures vise à illustrer des méthodes de traitement de données " \
-    "et nous permettre de mobiliser notre modèle de prédiction pour simuler une future consommation électrique." \
-    "" \
-    
-    "   - Les **prévisions climatiques** sont issues de **modèles complexes** qui comportent des **incertitudes** importantes." \
-    
-    "   - Les **données consolidées datent de 2020**, ce qui peut introduire un **biais temporel**. " \
-    
-    "   - Pour associer les données climatiques à nos **régions administratives**, nous avons utilisé une méthode triviale de **regroupement par encadrement** des **coordonnées géographiques**. " \
-    "")
-
     st.markdown("""
     <div style="background-color: #182C43 ; padding: 1em; border-radius: 5px; border-left: 5px solid #91caff;">
     <h4>⚠️ Avertissement</h4>
@@ -37,15 +25,8 @@ def drias():
     <li>Pour associer les données climatiques à nos <strong>régions administratives</strong>, nous avons utilisé une méthode triviale de <strong>regroupement par encadrement</strong> des <strong>coordonnées géographiques</strong>.</li>
     </ul>
     </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown("""
-    - Les **prévisions climatiques** sont issues de **modèles complexes** qui comportent des **incertitudes** importantes.  
-    - Les **données consolidées datent de 2020**, ce qui peut introduire un **biais temporel**.  
-    - Pour associer les données climatiques à nos **régions administratives**, nous avons utilisé une méthode triviale de **regroupement par encadrement** 
-      des **coordonnées géographiques**.
-    ---
-    """)            
+    """, unsafe_allow_html=True)  
+    st.write("---")
 
     st.markdown(" #### Choix d’un Scénario d’émission de Co2") 
     st.markdown("""
@@ -99,7 +80,9 @@ def drias():
     # COL RECOUPEMENT
     with col2:
         with st.container():
-            st.write("Nous passons d’un fichier : netCDF > df > .csv en traitant un df de près de **84 M de lignes** (😅)")
+            st.write("")
+            st.write("")
+            st.write("Nous passons d’un fichier : netCDF > df de près de **84 M de lignes** (😅)")
 
             ###### image ######
             img = load_image("Netcdf_to_df.png")
@@ -110,7 +93,8 @@ def drias():
                 st.warning("❌ L’image 'Netcdf_to_df.png' est introuvable dans le dossier `pictures/`.")
             ###### image ######
 
-
+    st.write("")
+    
     col3, col4 = st.columns([1, 1.2])
 
     with col3:
