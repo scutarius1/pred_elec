@@ -67,7 +67,54 @@ def drias():
     ##################
     st.write("---")
 
-    st.write("Croisement de l’ensemble des données avec définition des zones géographiques (coordonnées lat/long) pour chaque régions :")
+
+    # Création de deux colonnes
+    col1, col2 = st.columns([1, 1.2])
+
+    with col1:
+        st.markdown("### 🧩 De NetCDF à CSV")
+        st.write("Nous passons d’un fichier : netCDF > df > .csv avec plus de **6 Go** et **84 M de lignes (!!)**")
+
+        code = '''
+    import xarray as xr
+    import pandas as pd
+
+    # Charger le fichier netCDF
+    nc_file_2 = "Explo/tasAdjust_France_CNRM-CERFACS-CNRM-CM5_CNRM-ALADIN63_rcp4.5_METEO-FRANCE_ADAMONT-France_SAFRAN_day_20240101-20351231.nc"
+    ds2 = xr.open_dataset(nc_file_2)
+
+    # Convertir en DataFrame
+    df2 = ds2.to_dataframe()
+
+    # Sauvegarder en CSV
+    csv_file = "output2.csv"
+    df2.to_csv(csv_file)
+
+    print(f"Fichier CSV enregistré sous {csv_file}")
+    '''
+        st.code(code, language='python')
+
+    with col2:
+        with st.container():
+            st.markdown("#### 📌 Visualisation du pipeline")
+            img = load_image("Netcdf_to_df.png")
+            if img:
+                # On ajoute un encadré visuel avec `st.image` dans un `st.container`
+                st.image(img, caption="NetCDF → DataFrame → CSV", use_container_width=True)
+            else:
+                st.warning("❌ L’image 'Netcdf_to_df.png' est introuvable dans le dossier `pictures/`.")
+
+            # Encadré visuel (optionnel, juste pour le style)
+            st.markdown("""
+            <div style="border: 1px solid #D3D3D3; padding: 10px; border-radius: 10px; background-color: #FAFAFA;">
+            Cette figure illustre le pipeline de conversion d’un fichier NetCDF volumineux en CSV tabulaire exploitable dans nos modèles.
+            </div>
+            """, unsafe_allow_html=True)
+
+
+
+
+    st.write("Croisement de l’ensemble des données avec définition des zones géographiques (coordonnées lat/long) pour chaque régions...")
     
     code = '''
     # Définition des zones géographiques sous forme de DataFrame
@@ -91,11 +138,20 @@ def drias():
     '''
     st.code(code, language='python')
 
+    st.write("... et aboutir un nouveau dataset très leger de prévisions de températures régionales journalières 2024 à 2035 ✌️ ")
+    ###### image ######
+    img = load_image("dataset_temperatures_futures.png")
+    if img:
+            st.image(img, caption="fichier Future_temps.csv dans de repo", use_container_width=True)
+    else:
+            st.warning("❌ L’image est introuvable dans le dossier `pictures/`.")
+    ##################
+    st.write("---")
     st.markdown("### ⚠️ Avertissement")
 
     st.info("Cet exercice de simulation des températures futures vise uniquement à illustrer des méthodes de traitement de données " \
     "et nous permettre de mobiliser notre modèle de prédiction et simuler de manière triviale la future consommation électrique.")  
-      
+
     st.markdown("""
     - ⚠️ Les **prévisions climatiques** sont issues de **modèles complexes** qui comportent des **incertitudes** importantes.  
     - 📅 Les **données consolidées datent de 2020**, ce qui peut introduire un **biais temporel**.  
@@ -104,3 +160,7 @@ def drias():
 
     ---
     """)
+
+    st.markdown("""Pour aboutir finalement à notre dataset de température
+                Comparaison des évolution des courbes de température moyenne entre notre Dataset consolidé dédié au Machine Learning et ce df ‘Futur’.  
+                Ci-après, Test pour l’année 2020 (3ème année la plus chaude depuis 1900) VS prévisions 2026""")
