@@ -60,7 +60,7 @@ def create_regional_plots(df_cons_preprocessed, annee, mois, jour, frequence_res
     axes = axes.flatten()
 
     fig.suptitle(
-        "Consommations VS Moyen de Production VS Import/exports Régionnaux",
+        "Consommations VS Moyens de Production VS Import/exports Régionaux",
         fontsize=16, y=0.98  # Ajuste la hauteur du titre
     )
 
