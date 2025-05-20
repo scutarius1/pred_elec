@@ -37,43 +37,12 @@ def drias():
             st.warning("❌ L’image est introuvable dans le dossier `pictures/`.")
     ##################
 
-    st.write("Nous passons d’un fichier : netCDF > df > .csv  avec plus de 6 Go et 84 M de lignes (!!)")
 
-    code = '''
-    import xarray as xr
-    import pandas as pd
-
-    # Charger le fichier netCDF
-    nc_file_2 = "Explo/tasAdjust_France_CNRM-CERFACS-CNRM-CM5_CNRM-ALADIN63_rcp4.5_METEO-FRANCE_ADAMONT-France_SAFRAN_day_20240101-20351231.nc"
-    ds2 = xr.open_dataset(nc_file_2)
-
-    # Convertir en DataFrame (en fonction des variables présentes dans le fichier)
-    df2 = ds2.to_dataframe()
-
-    # Sauvegarder en CSV
-    csv_file = "output2.csv"
-    df2.to_csv(csv_file)
-
-    print(f"Fichier CSV enregistré sous {csv_file}")
-    '''
-    st.code(code, language='python')
-
-    ###### image ######
-    img = load_image("Netcdf_to_df.png")
-    if img:
-            st.image(img, caption="Nous passons d’un fichier : netCDF > df > .csv  avec plus de 6 Go et 84 M de lignes (!!)", use_container_width=True)
-    else:
-            st.warning("❌ L’image est introuvable dans le dossier `pictures/`.")
-    ##################
-    st.write("---")
-
-
-    # Création de deux colonnes
     col1, col2 = st.columns([1, 1.2])
 
+    # COL NETCDF
     with col1:
-        st.markdown("### 🧩 De NetCDF à CSV")
-        st.write("Nous passons d’un fichier : netCDF > df > .csv avec plus de **6 Go** et **84 M de lignes (!!)**")
+        st.markdown("#### 🧩 De NetCDF à CSV exploitable...")
 
         code = '''
     import xarray as xr
@@ -94,29 +63,27 @@ def drias():
     '''
         st.code(code, language='python')
 
+    # COL RECOUPEMENT
     with col2:
         with st.container():
-            st.markdown("#### 📌 Visualisation du pipeline")
+            st.write("Nous passons d’un fichier : netCDF > df > .csv en traitant un df de près de **84 M de lignes** (😅)")
+
+            ###### image ######
             img = load_image("Netcdf_to_df.png")
             if img:
                 # On ajoute un encadré visuel avec `st.image` dans un `st.container`
-                st.image(img, caption="NetCDF → DataFrame → CSV", use_container_width=True)
+                st.image(img, caption="Nous ferons bon usage des coordonnées géographiques et températures - tasAdjust", use_container_width=True)
             else:
                 st.warning("❌ L’image 'Netcdf_to_df.png' est introuvable dans le dossier `pictures/`.")
-
-            # Encadré visuel (optionnel, juste pour le style)
-            st.markdown("""
-            <div style="border: 1px solid #D3D3D3; padding: 10px; border-radius: 10px; background-color: #FAFAFA;">
-            Cette figure illustre le pipeline de conversion d’un fichier NetCDF volumineux en CSV tabulaire exploitable dans nos modèles.
-            </div>
-            """, unsafe_allow_html=True)
+            ###### image ######
 
 
+    col3, col4 = st.columns([1, 1.2])
 
+    with col3:
+        st.write("Croisement de l’ensemble des données avec définition des zones géographiques (coordonnées lat/long) pour chaque région...")
 
-    st.write("Croisement de l’ensemble des données avec définition des zones géographiques (coordonnées lat/long) pour chaque régions...")
-    
-    code = '''
+        code = '''
     # Définition des zones géographiques sous forme de DataFrame
     regions = [
         ("Auvergne-Rhône-Alpes", 44, 46.5, 2, 7),
@@ -135,18 +102,21 @@ def drias():
 
     df_regions = pd.DataFrame(regions, columns=["region", "lat_min", "lat_max", "lon_min", "lon_max"])
     df_regions
-    '''
-    st.code(code, language='python')
+        '''
+        st.code(code, language='python')
 
-    st.write("... et aboutir un nouveau dataset très leger de prévisions de températures régionales journalières 2024 à 2035 ✌️ ")
-    ###### image ######
-    img = load_image("dataset_temperatures_futures.png")
-    if img:
-            st.image(img, caption="fichier Future_temps.csv dans de repo", use_container_width=True)
-    else:
-            st.warning("❌ L’image est introuvable dans le dossier `pictures/`.")
-    ##################
+    
+    with col4:
+        with st.container():
+            st.write("... et aboutir à un nouveau dataset très léger de prévisions de températures régionales journalières 2024 à 2035 ✌️")
+            img = load_image("dataset_temperatures_futures.png")
+            if img:
+                st.image(img, caption="Fichier `Future_temps.csv` (prévisions 2024–2035)", use_container_width=True)
+            else:
+                st.warning("❌ L’image 'dataset_temperatures_futures.png' est introuvable dans le dossier `pictures/`.")
+
     st.write("---")
+
     st.markdown("### ⚠️ Avertissement")
 
     st.info("Cet exercice de simulation des températures futures vise uniquement à illustrer des méthodes de traitement de données " \
