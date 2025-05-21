@@ -267,7 +267,7 @@ def create_boxplot(df_energie, df_temp):
     ax1.set_xlabel('Mois')
     ax1.set_ylabel('Consommation (MW)')
 
-    return fig
+    return fig, df_corr01
 
 # ###############################
 # ⚙️ BOX PLOT SAISONS        ⚙️#
@@ -318,10 +318,8 @@ def create_annual_plot(df_st2):
 @st.cache_data
 def Test_corr(df_st3):
     """
-    Calcule les corrélations de Spearman et Pearson entre la Plage Horaire et la Consommation électrique.
-    Retourne un dictionnaire avec les coefficients et les p-values.
+    Calcule les corrélations de Spearman et Pearson entre la PLAGE HORAIRE et CONSO.
     """
-
     # Calcul des corrélations globales sur le jeu de données agrégé
     spearman_corr, spearman_p = spearmanr(df_st3['Plage Horaire'], df_st3['Consommation (MW)'])
     pearson_corr, pearson_p = pearsonr(df_st3['Plage Horaire'], df_st3['Consommation (MW)'])
@@ -333,6 +331,22 @@ def Test_corr(df_st3):
         "pearson_corr": pearson_corr,
         "pearson_p": pearson_p
     }
-
     return corr_results, df_st3
 
+#####UPDATE####
+def Test_corr_temp(df_corr01):
+    """
+    Calcule les corrélations de Spearman et Pearson entre la TEMPÉRATURE MOYENNE et la CONSOMMATION.
+    """
+    # Calcul des corrélations globales sur le jeu de données agrégé
+    spearman_corr, spearman_p = spearmanr(df_corr01['TMoy (°C)'], df_corr01['Consommation (MW)'])
+    pearson_corr, pearson_p = pearsonr(df_corr01['TMoy (°C)'], df_corr01['Consommation (MW)'])
+
+    # Retourner les résultats dans un dictionnaire pour affichage en aval
+    corr_results = {
+        "spearman_corr": spearman_corr,
+        "spearman_p": spearman_p,
+        "pearson_corr": pearson_corr,
+        "pearson_p": pearson_p
+    }
+    return corr_results, df_corr01

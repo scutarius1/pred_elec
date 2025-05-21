@@ -171,7 +171,7 @@ def main():
                  tout en visualisant la distribution et la variabilité de ces deux variables clés au fil de l'année :"""
         )
 
-        fig_boxplot = Explo_Viz.create_boxplot(df_energie, df_temp)  # Appel de la fonction
+        fig_boxplot,df_corr01 = Explo_Viz.create_boxplot(df_energie, df_temp)  # Appel de la fonction
         st.pyplot(fig_boxplot)  # Affichage du graphique dans Streamlit
         plt.close(fig_boxplot)  # Fermeture pour éviter les conflits de rendu
 
@@ -181,11 +181,32 @@ def main():
         st.write(" - **Corrélation Inverse Apparente** : En juxtaposant les deux types de données, on peut observer une corrélation inverse suggestive " \
         "entre la température moyenne et la consommation électrique.")
 
+        #CORRELATION TEMPERATURE ET CONSO
         st.write("""Pour vérifier cette hypothèse de correlation, ci-après le résultat d'un test statistique  """
         )
+        st.write(" Les hypothèses :")
+        st.write(" H0 : Il n'y a pas d'influence de la température sur la consommation")
+        st.write("H1 : Il y a une influence significative de la température sur la consommation")
+        #####UPDATE####
+        corr_results_temp, df_corr01 = Explo_Viz.Test_corr_temp(df_corr01)
 
+        st.write("#### Résultats des tests de corrélation entre Température moyenne et Consommation")
+        st.write("**Les hypothèses :**")
+        st.write("- H0 : Il n'y a pas de lien entre la température moyenne et la consommation")
+        st.write("- H1 : Il existe une relation significative entre température et consommation")
 
+        st.write(f"- Corrélation de Spearman : {corr_results_temp['spearman_corr']:.3f} (p-value = {corr_results_temp['spearman_p']:.3e})")
+        st.write(f"- Corrélation de Pearson : {corr_results_temp['pearson_corr']:.3f} (p-value = {corr_results_temp['pearson_p']:.3e})")
 
+        if corr_results_temp['spearman_p'] < 0.05 or corr_results_temp['pearson_p'] < 0.05:
+            st.write("➡️ Le lien entre **température** et **consommation** est **significatif**, car la p-valeur est inférieure à 0.05.")
+        else:
+            st.write("❗ Aucune corrélation significative détectée entre température et consommation (p-valeur > 0.05).")
+
+        st.write("💡 Note : La température peut influencer la consommation énergétique (chauffage ou climatisation), mais cette relation peut varier selon les régions, saisons, ou plages horaires.")
+        #####UPDATE####
+
+        #CORRELATION PLAGE HORAIRE ET CONSO
         st.write("### Plage Horaire et Consommation")
         st.write("")
         st.write(""" La variabilité horaire est particulièrement marquée en hiver, tandis qu’elle reste plus stable en été, comme l’indiquent les amplitudes des boxplots.
@@ -195,7 +216,6 @@ def main():
         fig_boxplot, df_st3 = Explo_Viz.create_boxplot_season(df_energie)  # Appel de la fonction
         st.pyplot(fig_boxplot)  # Affichage du graphique dans Streamlit
         plt.close(fig_boxplot)  # Fermeture pour éviter les conflits de rendu
-
 
         corr_results, df_st3 = Explo_Viz.Test_corr(df_st3)
 
