@@ -9,6 +9,7 @@ import gdown
 
 from utils import Explo_Viz
 from utils import divers_processing
+from utils import modelisation
 
 # #########################
 # ⚙️ LOAD & PREPROCESS ⚙️ #
@@ -258,31 +259,10 @@ def main():
 #################################
 
     elif page == pages[4]:
-        st.header("Modélisation")
-
-
-        st.write('#### Classification du problème 📂')
-
-        st.write("");st.write("") 
-
-        st.write(""" Type de problème et tâche de machine learning
-                Notre projet s’apparente à de la **prédiction de valeurs continues dans une suite temporelle** présentant plusieurs saisonnalités.
-                 L'objectif est d'anticiper la demande en énergie en fonction du temps, des conditions météorologiques et d'autres facteurs exogènes.\n\n"""
-                )
-        st.write('#### Choix des métriques de performance 🎯')
-              
-        st.markdown("""La métrique **MAPE (Mean Absolute Percentage Error)** est notre métrique principale car elle est facilement interprétable et comparable avec d’autres modèles.
-                 Nous cherchons d’une part à pénaliser les grandes erreurs compte tenu de l’enjeu de prédiction de consommation au plus juste (**RMSE** faible), 
-                 tout en pouvant comparer facilement nos différents modèles sur la base de % de variation (MAPE). Enfin, la qualité globale du modèle doit aussi être élevée pour tenir compte de manière équilibrée des spécificités régionales (**Score R2**).""") 
-        st.markdown("""
-                    Pour couvrir l’ensemble des KPI pertinents sur ce problème de régression nous allons donc récupérer chacun des indicateurs type :
-                    
-                    - Erreurs absolues et relatives (**MAE, MAPE**)
-                    - Erreurs quadratiques (**MSE, RMSE**)
-                    - Qualité d’ajustement (**R² Score**)
-                    """)
-
-
+        st.title("Modélisation")
+        
+        modelisation.intro()
+        
 #################################
 # ⚙️     DIVERS PROCESSING        ⚙️#
 #################################
