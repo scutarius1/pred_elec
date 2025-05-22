@@ -168,7 +168,7 @@ def cleaning():
     ###### image ######
     img = load_image("consolide_vs_non.png")
     if img:
-            st.image(img, caption="constate de l’impact de la consolidation dans la ‘propreté’ du dataset", use_container_width=True)
+            st.image(img, caption="On constate de l’impact de la consolidation dans la ‘propreté’ du dataset", use_container_width=True)
     else:
             st.warning("❌ L’image est introuvable dans le dossier `pictures/`.")
 
@@ -184,8 +184,38 @@ def cleaning():
     st.markdown("##### Gestion des Outliers ?")
     st.markdown("""
                 Concrètement à moins d'un Black out sur 100% d'un territoire, une valeur exceptionnellement basse ou nulle sur une courte durée, 
-                c'est très probablement une erreur matérielle. De même pour des valeurs anormalement élevée.
-                Ci-après quelques exemples visuels des valeurs anormales que l'on a du retraiter.
+                est très probablement une erreur matérielle. De même pour des valeurs anormalement élevée.
+                """)
+    st.write("Ci-après quelques exemples visuels des valeurs anormales que l'on a du retraiter.")
+    ###### image ######
+    img = load_image("pics_cons.png")
+    if img:
+            st.image(img, caption="Pics et chutes de conso", use_container_width=True)
+    else:
+            st.warning("❌ L’image est introuvable dans le dossier `pictures/`.")
+
+    img = load_image("affectations_croisees2.png")
+    if img:
+            st.image(img, caption="Zoom sur la période", use_container_width=True)
+    else:
+            st.warning("❌ L’image est introuvable dans le dossier `pictures/`.")
+    
+    img = load_image("affectations_croisees.png")
+    if img:
+            st.image(img, caption="Affectations croisées dans valeurs récupérées ?", use_container_width=True)
+    else:
+            st.warning("❌ L’image est introuvable dans le dossier `pictures/`.")
+
+    img = load_image("releves_zeros.png")
+    if img:
+            st.image(img, caption="Erreurs de relevés à 'Zeros' à minuit", use_container_width=True)
+    else:
+            st.warning("❌ L’image est introuvable dans le dossier `pictures/`.")
+
+    ###### image ######
+    
+    
+    st.markdown("""
                 Une fois les régions et périodes problématiques identifiées (avec l'aide de Plotly qui a été hyper pratique ), le remplacement des outliers s'est fait :
                 - Par **Interpolation linéaire** pour les valeur nulles et les rupture manifestes de tendances
                 - Par **imputation** (par la **moyenne historique**) principalement pour les valeurs anormalement basses. 
