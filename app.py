@@ -9,7 +9,6 @@ import gdown
 
 from utils import Explo_Viz
 from utils import divers_processing
-from utils.Explo_Viz import heatmap_correlation_temp_conso
 
 # #########################
 # ⚙️ LOAD & PREPROCESS ⚙️ #
@@ -191,8 +190,8 @@ def main():
 #NOUVEAUTE
 
         # Appel de la fonction
-        heatmap_correlation_temp_conso(df_energie, df_temp)
-        
+        Explo_Viz.heatmap_correlation_temp_conso(df_energie, df_temp)
+
 #NOUVEAUTE
         st.write("### Température et Consommation")
         st.write("""Le graphique ci-après combine des 'boxplots' de **consommation électrique (MW)** et un 'scatter plot' de **température moyenne (°C)**,
