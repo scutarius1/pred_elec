@@ -350,32 +350,3 @@ def Test_corr_temp(df_corr01):
         "pearson_p": pearson_p
     }
     return corr_results, df_corr01
-
-
-def heatmap_correlation_temp_conso(df_energie, df_temp):
-    st.header("Corrélations température ↔ consommation (vue nationale)")
-
-    # Choix de la méthode de corrélation
-    method = st.selectbox("Méthode de corrélation :", ['Pearson', 'Spearman'])
-
-# Fusion sur Région + Date
-    # On suppose que df_energie a au moins les colonnes 'Région' et 'Date'
-    # et que df_temp a 'Région', 'Date', 'TMoy (°C)'
-    df_merge = pd.merge(
-        df_energie,
-        df_temp[['Région', 'Date', 'TMoy (°C)']],
-        on=['Région', 'Date'],
-        how='left'
-    )
-
-    # Agrégation nationale par Date (et potentiellement horaire si présent)
-    
-    # Calcul corrélation
-    df_num = df_merge.select_dtypes(include=['float64', 'int64'])
-    corr_matrix = df_num.corr(method=method.lower())
-
-    # Heatmap
-    fig, ax = plt.subplots(figsize=(10, 8))
-    sns.heatmap(corr_matrix, annot=True, fmt=".2f", cmap="coolwarm", center=0, square=True)
-    plt.title(f"Heatmap de corrélation ({method}) - niveau national", fontsize=14)
-    st.pyplot(fig)

@@ -187,12 +187,7 @@ def main():
         st.pyplot(fig_boxplot)
         plt.close(fig_boxplot)
         st.write("")
-#NOUVEAUTE
 
-        # Appel de la fonction
-        Explo_Viz.heatmap_correlation_temp_conso(df_energie, df_temp)
-
-#NOUVEAUTE
         st.write("### Température et Consommation")
         st.write("""Le graphique ci-après combine des 'boxplots' de **consommation électrique (MW)** et un 'scatter plot' de **température moyenne (°C)**,
                  le tout groupé par mois sur l’entièreté de la période étudiée. Il permet d'émettre l'hypothèse d'une influence significative de la température sur la consommation électrique au niveau mensuel, 
