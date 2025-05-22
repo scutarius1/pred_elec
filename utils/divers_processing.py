@@ -15,17 +15,13 @@ def drias():
     au format [**NetCDF**](https://fr.wikipedia.org/wiki/NetCDF) pouvant répondre à ce besoin.
     """)
 
-    st.markdown("""
-    <div style="background-color: #182C43 ; padding: 1em; border-radius: 5px; border-left: 5px solid #91caff;">
-    <h4>⚠️ Avertissement</h4>
-    <p><strong>Cet exercice de simulation des températures futures vise à illustrer des méthodes de traitement de données et nous permettre de mobiliser notre modèle de prédiction pour simuler une future consommation électrique.</strong></p>
-    <ul>
-    <li>Les <strong>prévisions climatiques</strong> sont issues de <strong>modèles complexes</strong> qui comportent des <strong>incertitudes</strong> importantes.</li>
-    <li>Les <strong>données consolidées datent de 2020</strong>, ce qui peut introduire un <strong>biais temporel</strong>.</li>
-    <li>Pour associer les données climatiques à nos <strong>régions administratives</strong>, nous avons utilisé une méthode triviale de <strong>regroupement par encadrement</strong> des <strong>coordonnées géographiques</strong>.</li>
-    </ul>
-    </div>
-    """, unsafe_allow_html=True)  
+    st.info("⚠️ Avertissement : Cet exercice de simulation des températures futures vise à illustrer des méthodes de traitement de données" \
+    "et nous permettre de mobiliser notre modèle de prédiction pour simuler une future consommation électrique. " \
+    "Les prévisions climatiques sont issues de modèles complexes qui comportent des incertitudes importantes." \
+    "Les données consolidées datent de 2020, ce qui peut introduire un biais temporel. " \
+    "Pour associer les données climatiques à nos régions administratives nous avons utilisé une méthode triviale de regroupement par encadrement des coordonnées géographiques." \
+    "")
+            
     st.write("---")
 
     st.markdown(" #### Choix d’un Scénario d’émission de Co2") 
@@ -157,7 +153,7 @@ def drias():
 #################################
 def cleaning():
     
-    st.header("⚙️ Data Cleaning ✂️ Dataset Principal")
+    st.header("Data Cleaning ✂️ 'Eco2mix'")
   
     st.markdown("""
                 Le Datacleaning : a été la part la plus importante en terme de préprocessing. 
@@ -223,3 +219,4 @@ def cleaning():
                 sur la plage temporelle concernée par la moyenne historique de cette même plage.
 
                 """)
+    st.write("---")

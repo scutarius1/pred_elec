@@ -33,7 +33,7 @@ def load_and_preprocess_data():
 def main():
     #st.title("Prédiction de Consommation Electrique en France")
     st.sidebar.title("⚡⚡ Prédiction Conso Electrique en France ⚡⚡")
-    pages = ["📖 Contexte et Datasets", "📊 Production VS Consommation", "📉 Variabilité de la consommation", " 🤖 Modélisation", "✂️ Divers Prétraitement des données"]
+    pages = ["📖 Contexte et Datasets", "📊 Production VS Consommation", "📉 Variabilité de la consommation", "✂️ Prétraitements des données"," 🤖 Modélisation"]
     page = st.sidebar.radio("Aller vers", pages)
     #st.sidebar.title("Modélisation")
     #st.sidebar.page_link("pages/modelisation.py", label="Processing et Modélisation")
@@ -51,48 +51,72 @@ def main():
         st.title("Prédiction de Consommation Electrique en France")
         st.write("")
         st.header("Contexte")
-        st.write(""" Contexte : L’adéquation entre la production et la consommation d’électricité est au cœur des préoccupations d’un acteur de l’énergie comme EDF. 
+        st.markdown(""" L’adéquation entre la production et la consommation d’électricité est au cœur des préoccupations d’un acteur de l’énergie comme EDF. 
                  EDF, en tant que producteur et commercialisateur d’électricité est en effet un responsable d’équilibre vis-à-vis de RTE. 
                  Cela signifie qu’il se doit d’assurer à tout instant un équilibre entre sa production et la consommation de ses clients, sous peine de pénalités. 
                  Pour se faire, construire un modèle de prévision de la consommation de ses clients est une activité essentielle au bon fonctionnement de EDF.""") 
-        st.write('Objectif : Constater le phasage entre la consommation et la production énergétique au niveau national et au niveau régional. ' \
-            'Analyse au niveau régional pour en déduire une prévision de consommation au niveau national et au niveau régional (risque de black out notamment)')
         
+        st.write('**Objectif** : Constater le phasage entre la consommation et la production énergétique au niveau national et au niveau régional. ' \
+            'Analyse pour en déduire une prévision de consommation (risque de black out notamment)')
+
         st.write("## Les jeux de données mis en oeuvre")
         data = [
-        {"Objet": "Energie", "Description": "Production et consommation d’énergie par type de moyen de production et régions ( 30 min)", "Période couverte": "2013-2022", "Volumétrie (lignes x colonnes)": "2.121.408 x 32", "Source": "ODRE, Open Data EDF"},
-        {"Objet": "Energie Temps Réel", "Description": "Production et consommation d’énergie par type de moyen de production et région (15 min, non consolidé)", "Période couverte": "2023-2024", "Volumétrie (lignes x colonnes)": "796.000 x 32", "Source": "ODRE"},
+        {"Objet": "Energie (Consolidé)", "Description": "Production et consommation d’énergie par type de moyen de production et régions ( 30 min)", "Période couverte": "2013-2022", "Volumétrie (lignes x colonnes)": "2.121.408 x 32", "Source": "ODRE, Open Data EDF"},
+        {"Objet": "Energie (Temps Réel)", "Description": "Production et consommation d’énergie par type de moyen de production et région (15 min, non consolidé)", "Période couverte": "2023-2024", "Volumétrie (lignes x colonnes)": "796.000 x 32", "Source": "ODRE"},
         {"Objet": "Population", "Description": "Évolutions et prévisions de la population française par région", "Période couverte": "1990-2070", "Volumétrie (lignes x colonnes)": "264.951 x 7", "Source": "INSEE"},
         {"Objet": "Température", "Description": "Évolution des températures quotidiennes par région", "Période couverte": "2016-2024", "Volumétrie (lignes x colonnes)": "41.756 x 7", "Source": "Météo France"},
         {"Objet": "Température", "Description": "Simulations 'DRIAS-2020' : données corrigées quotidiennes. Grille Safran", "Période couverte": "2006-2100", "Volumétrie (lignes x colonnes)": "83.987.046 x 8", "Source": "DRIAS"},
         ]
-        st.table(data)
-    
-        st.write("### Exploration 'Eco2Mix' - DataSet Principal")
-        st.write(""" Le data set principal est structuré de la sorte(.sample .describe .info)""") 
 
-        st.dataframe(df_cons_preprocessed.sample(20))  # Utiliser le dataframe prétraité
+        st.markdown("""
+                    <style>
+                    .stTable td:nth-child(2),.stTable td:nth-child(4) {
+                    white-space: nowrap;
+                    }
+                    </style>
+                    """, unsafe_allow_html=True)
+        st.table(data)
+
+        st.markdown(""" Les échanges avec le data scientist EDF ont confirmé notre intuition d’expliquer la variable cible **Consommation** 
+                    par les variables explicatives **Température**, **Dates** et **Population**.
+                    Nous pourrons en effet à travers la variable 'Date' étudier l’impact des saisons, des périodes de vacances scolaires et des week-ends notamment.
+        """)
+    
+        st.write("### 🔎 Exploration 'Eco2Mix' - Notre dataset Principal")
+        st.markdown("""
+                    Ce jeu de données, rafraîchi une fois par jour, présente les données régionales consolidées depuis janvier 2021 et définitives (de janvier 2013 à décembre 2020) issues de l'application éCO2mix. 
+                    Elles sont élaborées à partir des comptages et complétées par des forfaits. Les données sont dites consolidées lorsqu'elles ont été vérifiées et complétées (livraison en milieu de M+1). 
+                    Vous y trouverez au pas demi-heure:
+                    - La consommation réalisée.
+                    - La production selon les différentes filières composant le mix énergétique.
+                    - La consommation des pompes dans les Stations de Transfert d'Energie par Pompage (STEP).
+                    - Le solde des échanges avec les régions limitrophes.
+                    """)
+        st.markdown("Source : pour en savoir plus et télécharger ce dataset produit par RTE, cliquez [ICI](https://odre.opendatasoft.com/explore/dataset/eco2mix-regional-cons-def/information/?disjunctive.libelle_region&disjunctive.nature&sort=-date_heure&dataChart=eyJxdWVyaWVzIjpbeyJjaGFydHMiOlt7InR5cGUiOiJsaW5lIiwiZnVuYyI6IlNVTSIsInlBeGlzIjoiY29uc29tbWF0aW9uIiwiY29sb3IiOiJyYW5nZS1jdXN0b20iLCJzY2llbnRpZmljRGlzcGxheSI6dHJ1ZX1dLCJ4QXhpcyI6ImRhdGVfaGV1cmUiLCJtYXhwb2ludHMiOjIwMCwidGltZXNjYWxlIjoibWludXRlIiwic29ydCI6IiIsImNvbmZpZyI6eyJkYXRhc2V0IjoiZWNvMm1peC1yZWdpb25hbC1jb25zLWRlZiIsIm9wdGlvbnMiOnsiZGlzanVuY3RpdmUubGliZWxsZV9yZWdpb24iOnRydWUsImRpc2p1bmN0aXZlLm5hdHVyZSI6dHJ1ZSwic29ydCI6Ii1kYXRlX2hldXJlIn19LCJzZXJpZXNCcmVha2Rvd24iOiJsaWJlbGxlX3JlZ2lvbiJ9XSwidGltZXNjYWxlIjoiIiwiZGlzcGxheUxlZ2VuZCI6dHJ1ZSwiYWxpZ25Nb250aCI6dHJ1ZX0%3D)")
         st.write("---")
+        st.write("Echantillon .sample(10) : ")
+        st.dataframe(df_cons_preprocessed.sample(10))  # Utiliser le dataframe prétraité
+        st.write("---")
+        st.write("résumé statistique  .describe() : ")
         st.dataframe(df_cons_preprocessed.describe())
         st.write("---")
+        st.write("Infos dataframe  .info() : ")
         # Capturer et afficher df_cons_preprocessed.info() directement avec st.text
         buffer = io.StringIO()
         df_cons_preprocessed.info(buf=buffer)
         s = buffer.getvalue()
         st.text(s)
 
-        st.markdown("[Cliquez ici pour en savoir plus sur les actions de datacleaning](https://www.notion.so/Projet-Data-ENERGIE-PRE-PROCESSING-Fusion-Eco2mix-2-fichiers-18c725f38aa58062b1d7f79dc035f834?pvs=4)")
-        
+       
 ####################################
 # ⚙️ DATAVIZ ADEQUATION PROD/CONSO    ⚙️#
 ####################################
 
     elif page == pages[1]:
-        st.header("Inégalités Régionales dans le Mix Energétique "
+        st.header("Inégalités Régionales : Mix Energétique et Capacités de Production"
         )
 
-        st.write ("""En plus de ne pas avoir le même mix energétique, les régions sont dans une situation de disparité de leurs capacités de production pour couvrir leurs besoins.
-                  (cf. infra.)""")
+        st.write ("""En plus de ne pas avoir le même mix energétique, les régions sont dans une situation de disparité de leurs capacités de production pour couvrir leurs besoins : """)
 
 #Affichage des taux de couverture/régions
 
@@ -101,21 +125,19 @@ def main():
         st.pyplot(fig2)
         plt.close(fig2)
         st.write("");st.write("") 
-
+        st.write("---")
 #Affichage des besoins /régions dans le temps    
 
-        st.header("Phasage consommation et Echanges Inter-régionnaux"
+        st.header("Phasage et Echanges Inter-régionnaux : Visualisation interactive 🤓 "
         )
-
         st.write("");st.write("") 
 
-        st.write(""" Pour résoudre cela avec l'aides des opérateurs d'énergie, les régions procèdent toute l'année à des *échanges*.
-                Le graphique ci-après permet de constater quelque soit la période et la maille temporelle choisie :
-                la **variabilité des besoins** des Régions au fil du temps d'une part. Le phasage entre Consommation 
+        st.write(""" Avec l'aide des opérateurs d'énergie, les régions procèdent toute l'année à des *échanges*.
+                Le graphique interactif ci-après permet de constater quelque soit la période et la maille temporelle choisie :
+                la **variabilité des besoins** des Régions au fil du temps d'une part. Le phasage entre Consommation (Ligne en pointillé noir) 
                  et Production au moyen des **échanges inter-régionnaux** d'autre part.
                     """)
         st.write("") 
-        st.write("Vous pouvez utiliser les filtres ci-dessus pour explorer différentes périodes et régions.")
 
 ## ⚙️ OUTIL DE FILTRAGE ####
         st.markdown('<div class="filtre-vert">', unsafe_allow_html=True)
@@ -234,11 +256,11 @@ def main():
 # ⚙️     MODELISATIONS        ⚙️#
 #################################
 
-    elif page == pages[3]:
+    elif page == pages[4]:
         st.header("Modélisation")
 
 
-        st.write('#### Classification du problème')
+        st.write('#### Classification du problème 📂')
 
         st.write("");st.write("") 
 
@@ -246,25 +268,25 @@ def main():
                 Notre projet s’apparente à de la **prédiction de valeurs continues dans une suite temporelle** présentant plusieurs saisonnalités.
                  L'objectif est d'anticiper la demande en énergie en fonction du temps, des conditions météorologiques et d'autres facteurs exogènes.\n\n"""
                 )
-        st.write('#### Choix des métriques de performance')
+        st.write('#### Choix des métriques de performance 🎯')
               
         st.markdown("""La métrique **MAPE (Mean Absolute Percentage Error)** est notre métrique principale car elle est facilement interprétable et comparable avec d’autres modèles.
                  Nous cherchons d’une part à pénaliser les grandes erreurs compte tenu de l’enjeu de prédiction de consommation au plus juste (**RMSE** faible), 
                  tout en pouvant comparer facilement nos différents modèles sur la base de % de variation (MAPE). Enfin, la qualité globale du modèle doit aussi être élevée pour tenir compte de manière équilibrée des spécificités régionales (**Score R2**).""") 
-        
-        st.info("Pour couvrir l’ensemble des KPI pertinents sur ce problème de régression nous allons donc récupérer chacun des indicateurs type: "
-        "- Erreurs absolues et relatives (**MAE, MAPE**)"
-        "- Erreurs quadratiques (**MSE, RMSE**)"
-        "- Qualité d’ajustement (**R² Score**)" \
-        "")
-   
+        st.markdown("""
+                    Pour couvrir l’ensemble des KPI pertinents sur ce problème de régression nous allons donc récupérer chacun des indicateurs type :
+                    
+                    - Erreurs absolues et relatives (**MAE, MAPE**)
+                    - Erreurs quadratiques (**MSE, RMSE**)
+                    - Qualité d’ajustement (**R² Score**)
+                    """)
 
 
 #################################
 # ⚙️     DIVERS PROCESSING        ⚙️#
 #################################
 
-    elif page == pages[4]:
+    elif page == pages[3]:
         st.title("Challenges Preprocessing ")
         divers_processing.cleaning()
         divers_processing.drias()
