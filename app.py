@@ -9,6 +9,7 @@ import gdown
 
 from utils import Explo_Viz
 from utils import divers_processing
+from utils.Explo_Viz import heatmap_correlation_temp_conso
 
 # #########################
 # ⚙️ LOAD & PREPROCESS ⚙️ #
@@ -128,14 +129,14 @@ def main():
         st.write("---")
 #Affichage des besoins /régions dans le temps    
 
-        st.header("Phasage et Echanges Inter-régionnaux : Visualisation interactive 🤓 "
+        st.header("Phasages et Echanges Inter-régionaux : Visualisation interactive 🤓 "
         )
         st.write("");st.write("") 
 
         st.write(""" Avec l'aide des opérateurs d'énergie, les régions procèdent toute l'année à des *échanges*.
                 Le graphique interactif ci-après permet de constater quelque soit la période et la maille temporelle choisie :
                 la **variabilité des besoins** des Régions au fil du temps d'une part. Le phasage entre Consommation (Ligne en pointillé noir) 
-                 et Production au moyen des **échanges inter-régionnaux** d'autre part.
+                 et Production au moyen des **échanges inter-régionaux** d'autre part.
                     """)
         st.write("") 
 
@@ -187,6 +188,12 @@ def main():
         st.pyplot(fig_boxplot)
         plt.close(fig_boxplot)
         st.write("")
+#NOUVEAUTE
+
+        # Appel de la fonction
+        heatmap_correlation_temp_conso(df_energie, df_temp)
+        
+#NOUVEAUTE
         st.write("### Température et Consommation")
         st.write("""Le graphique ci-après combine des 'boxplots' de **consommation électrique (MW)** et un 'scatter plot' de **température moyenne (°C)**,
                  le tout groupé par mois sur l’entièreté de la période étudiée. Il permet d'émettre l'hypothèse d'une influence significative de la température sur la consommation électrique au niveau mensuel, 
