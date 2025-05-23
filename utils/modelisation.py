@@ -157,7 +157,7 @@ def intro():
         st.info("Cliquez sur 'Charger et Traiter les Données' pour commencer à visualiser et modéliser. " \
         "L'entrainement des modèles est ensuite proposé.")
 
-    
+@st.cache_data    
 def load_process_dataset_modelisation():
     #Télécharge et prétraite les données depuis Google Drive."""
     file_id = "1wiXdpj6XHzB1eRxRbvcnsgE21ukVBvXs"  # Ton ID de fichier extrait
