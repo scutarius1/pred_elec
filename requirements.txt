@@ -9,7 +9,7 @@ gdown==5.2.0
 plotly
 joblib
 lightgbm>=3.3.0     
-scikit-learn>=1.2.0   
+scikit-learn>=1.6.1  
 xgboost>=1.7.0        
 prophet>=1.1.0        
 Pillow

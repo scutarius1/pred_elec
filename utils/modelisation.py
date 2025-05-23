@@ -235,10 +235,6 @@ def RF_XGB(model_name, df, split_date, target, features):
         # Filtrer les données par région à partir des ensembles déjà splittés
         train_region_df = train_df[train_df['Région'] == region]
         test_region_df = test_df[test_df['Région'] == region]
-
-        if len(train_region_df) == 0 or len(test_region_df) == 0:
-            st.warning(f"Pas assez de données pour la région {region} pour le modèle {model_name}. Skipping.")
-            continue
             
         X_train = train_region_df[features]
         y_train = train_region_df[target]

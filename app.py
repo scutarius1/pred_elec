@@ -1,9 +1,12 @@
 import streamlit as st
 import streamlit.components.v1 as components
 import io
+import os
+#ajout OS + if not os.path.exists
 import pandas as pd
 import matplotlib.pyplot as plt
 import gdown
+import time
 
 #import Explo_Viz , considération data cleaning & seeking
 
@@ -15,6 +18,16 @@ from utils import modelisation
 # ⚙️ LOAD & PREPROCESS ⚙️ #
 ##########################
 
+def log_perf(func):
+    import time
+    def wrapper(*args, **kwargs):
+        start = time.perf_counter()
+        result = func(*args, **kwargs)
+        end = time.perf_counter()
+        print(f"[perf] {func.__name__} exécutée en {end - start:.2f} secondes")
+        return result
+    return wrapper
+@log_perf
 @st.cache_data
 def load_and_preprocess_data():
     """Télécharge et prétraite les données depuis Google Drive."""
@@ -23,14 +36,18 @@ def load_and_preprocess_data():
     url = f"https://drive.google.com/uc?id={file_id}"  # Lien de téléchargement direct
     output = "eco2mix-regional_reduced.csv"
     gdown.download(url, output, quiet=False)
-    df_cons = pd.read_csv(output, sep=',', on_bad_lines="skip", encoding="utf-8",low_memory=False)
+
+    if not os.path.exists(output):  # ⚠️ Evite redownload
+        gdown.download(url, output, quiet=False)
+
+    df_cons = pd.read_csv(output, sep=',', on_bad_lines="skip", encoding="utf-8",low_memory=False)  
     
     # Appliquer le prétraitement
     df_cons_preprocessed = Explo_Viz.preprocess_data(df_cons)
     df_energie = Explo_Viz.preprocess_data2(df_cons_preprocessed)
     df_temp = Explo_Viz.load_temp()  # Charger les données de température
     return df_cons_preprocessed, df_energie, df_temp #ajout de df_energie
-
+@log_perf
 def main():
     #st.title("Prédiction de Consommation Electrique en France")
     st.sidebar.title("⚡⚡ Prédiction Conso Electrique en France ⚡⚡")
