@@ -154,7 +154,8 @@ def intro():
             st.subheader("Moyennes des métriques d'évaluation XGBoost (Global) :")
             st.dataframe(st.session_state['xgb_global_mean_metrics'].to_frame(name='Moyenne').T)
     else:
-        st.info("Cliquez sur 'Charger et Traiter les Données' pour commencer à visualiser et modéliser.")
+        st.info("Cliquez sur 'Charger et Traiter les Données' pour commencer à visualiser et modéliser. " \
+        "L'entrainement des modèles est ensuite proposé.")
 
     
 def load_process_dataset_modelisation():
@@ -265,17 +266,15 @@ def RF_XGB(model_name, df, split_date, target, features):
                 min_samples_split=2, 
                 min_samples_leaf=1, 
                 random_state=42,
-                n_jobs=-1 # Utile pour Streamlit pour la performance
+                n_jobs=1 # Utile pour Streamlit pour la performance
             )
         elif model_name == "XGBoost":
             current_model = XGBRegressor(
-                n_estimators=100,             # Nombre d'estimateurs (arbres)
-                max_depth=5,                  # Profondeur maximale de l'arbre
-                learning_rate=0.1,            # Taux d'apprentissage
-                subsample=0.8,                # Proportion d'échantillons utilisés pour ajuster les arbres
-                colsample_bytree=0.8,         # Proportion de features utilisées pour ajuster les arbres
+                n_estimators=300,             # Nombre d'estimateurs (arbres)
+                max_depth=3,                  # Profondeur maximale de l'arbre
+                learning_rate=0.05,            # Taux d'apprentissage
                 random_state=42,
-                n_jobs=-1
+                n_jobs=1    
             )
         else:
             st.error(f"Modèle non supporté pour l'entraînement : {model_name}")
