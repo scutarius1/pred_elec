@@ -251,8 +251,8 @@ def RF_XGB(model_name, df, split_date, target, features):
         current_model = None
         if model_name == "RandomForest":
             current_model = RandomForestRegressor(
-                n_estimators=10, 
-                max_depth=10, 
+                n_estimators=8, 
+                max_depth=8, 
                 min_samples_split=2, 
                 min_samples_leaf=1, 
                 random_state=42,
@@ -260,7 +260,7 @@ def RF_XGB(model_name, df, split_date, target, features):
             )
         elif model_name == "XGBoost":
             current_model = XGBRegressor(
-                n_estimators=200,             # Nombre d'estimateurs (arbres)
+                n_estimators=100,             # Nombre d'estimateurs (arbres)
                 max_depth=3,                  # Profondeur maximale de l'arbre
                 learning_rate=0.05,            # Taux d'apprentissage
                 random_state=42,
