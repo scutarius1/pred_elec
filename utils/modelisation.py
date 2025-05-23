@@ -20,8 +20,8 @@ from prophet import Prophet
 
 
 def intro():
-    if 'processed_df' not in st.session_state:
-        st.session_state['processed_df'] = None
+    if 'df' not in st.session_state:
+        st.session_state['df'] = None
         st.session_state['split_date'] = None
         st.session_state['target'] = None
         st.session_state['features'] = None
@@ -71,17 +71,17 @@ def intro():
     if st.button("Charger et Traiter les Données"):
         with st.spinner("Chargement et traitement des données en cours..."):
             # Décomposez le tuple retourné en variables séparées
-            processed_df, split_date, target, features = load_process_dataset_modelisation() 
+            df, split_date, target, features = load_process_dataset_modelisation() 
             # CES LIGNES SONT CRUCIALES POUR LE STOCKAGE
-            st.session_state['processed_df'] = processed_df
+            st.session_state['df'] = df
             st.session_state['split_date'] = split_date
             st.session_state['target'] = target
             st.session_state['features'] = features
-            st.session_state['df_prophet_ready'] = processed_df.reset_index().rename(columns={'Date + Heure': 'ds', 'Consommation (MW)': 'y'})
+            st.session_state['df_prophet_ready'] = df.reset_index().rename(columns={'Date + Heure': 'ds', 'Consommation (MW)': 'y'})
     # ...
         st.success("Données chargées et prétraitées avec succès !")
         st.subheader("Aperçu du DataFrame après prétraitement :")
-        st.dataframe(processed_df.sample(10)) 
+        st.dataframe(df.sample(10)) 
         st.subheader("Paramètres de modélisation :")
         st.write(f"**Date de séparation (split_date) :** {split_date}")
         st.write(f"**Variable cible (target) :** `{target}`")
@@ -90,17 +90,17 @@ def intro():
 
 
     if st.button("Lancer l'entraînement et l'évaluation RandomForest"):
-        if 'processed_df' not in st.session_state:
+        if 'df' not in st.session_state:
             st.warning("Veuillez d'abord charger et traiter les données.")
         else:
-            processed_df = st.session_state['processed_df']
+            df = st.session_state['df']
             split_date = st.session_state['split_date']
             target = st.session_state['target']
             features = st.session_state['features']
 
             with st.spinner("Entraînement et évaluation des modèles RandomForest en cours..."):
                 # Appel de la nouvelle fonction adaptée
-                rf_metrics_df_per_region, rf_global_mean_metrics = random_forest (processed_df, split_date, target, features)
+                rf_metrics_df_per_region, rf_global_mean_metrics = random_forest (df, split_date, target, features)
 
             st.success("Évaluation RandomForest terminée !")
 
@@ -175,25 +175,13 @@ def load_process_dataset_modelisation():
 
     return df, split_date, target, features
 
-
-
 def random_forest (df, split_date, target, features):
-    """
-    Entraîne un modèle RandomForest pour chaque région, évalue ses performances
-    et retourne un DataFrame des métriques, y compris les importances des features.
-    """
+
     results = [] # Pour stocker les métriques par région
     # all_y_test_RF et all_y_pred_RF peuvent être gérés ici si nécessaire pour des agrégations globales,
     # mais pour le tableau par région, ils ne sont pas directement nécessaires au retour.
 
     regions = df['Région'].unique()
-
-    # NOTE: Dans votre script original, vous refiltrez df_region = df[df['Région'] == region]
-    # puis vous faites le split sur df_region.index.
-    # On peut optimiser en splittant le df global une fois, puis en filtrant par région.
-    # Ou garder votre logique si elle est plus claire pour vous.
-    # Je vais garder la logique que j'avais proposée qui splittait globalement puis filtrait,
-    # car cela évite de recalculer split_date à chaque itération.
 
     # Diviser le DataFrame global en ensembles d'entraînement et de test
     train_df = df[df.index < split_date]
@@ -207,10 +195,6 @@ def random_forest (df, split_date, target, features):
         train_region_df = train_df[train_df['Région'] == region]
         test_region_df = test_df[test_df['Région'] == region]
 
-        if len(train_region_df) == 0 or len(test_region_df) == 0:
-            st.warning(f"Pas assez de données pour la région {region}. Skipping.")
-            continue
-            
         # Préparer les données pour le modèle
         X_train = train_region_df[features]
         y_train = train_region_df[target]
