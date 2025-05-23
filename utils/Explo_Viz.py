@@ -69,12 +69,12 @@ def create_regional_plots(df_cons_preprocessed, annee, mois, jour, frequence_res
         else:
             raise ValueError(f"Fréquence de rééchantillonnage invalide: {frequence_resample}")
         dfs_regions.append(df_region)
-    fig, axes = plt.subplots(2, 2, figsize=(12, 9), sharey=True)
+    fig, axes = plt.subplots(2, 1, figsize=(12, 9), sharey=True)
     axes = axes.flatten()
 
     fig.suptitle(
-        "Consommations VS Moyens de Production VS Import/exports Régionaux",
-        fontsize=16, y=0.98  # Ajuste la hauteur du titre
+        "Conso VS Prod VS Echanges",
+        fontsize=16, y=1.05  # Ajuste la hauteur du titre
     )
 
     def format_dates_by_frequency(df, ax, frequence_resample):
@@ -155,7 +155,7 @@ def create_barplot(df_cons_preprocessed):
 # ⚙️ PREPROCESSING 2 & LOAD TEMPERATURES  ⚙️#
 ############################################
 
-#@st.cache_data
+#@st.cache_data 
 @log_perf
 @st.cache_data
 def compute_df_st2(df_energie):

@@ -177,11 +177,11 @@ def main():
         with col3:
             frequence_resample = st.radio("**Fréquence** (échantillonnage)", options=['Heure', 'Jour', 'Semaine', 'Mois'],index=1  # 'Jour' par défaut
             )
-
-        regions_preselectionnees = ['Auvergne-Rhône-Alpes', 'Bretagne', 'Centre-Val de Loire', "Provence-Alpes-Côte d'Azur"]
+#'Bretagne', 'Centre-Val de Loire', 
+        regions_preselectionnees = ['Auvergne-Rhône-Alpes', "Provence-Alpes-Côte d'Azur"]
         regions = sorted(df_cons_preprocessed['Région'].unique())
 
-        regions_selected = st.multiselect("Régions à comparer (4 maximum)", options=regions,default=regions_preselectionnees
+        regions_selected = st.multiselect("Régions à comparer (2 maximum)", options=regions,default=regions_preselectionnees
         )
         st.markdown("<hr style='border: 4px solid #4CAF50;'>", unsafe_allow_html=True)
 
