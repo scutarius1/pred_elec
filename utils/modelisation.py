@@ -20,17 +20,25 @@ from prophet import Prophet
 
 
 def intro():
+    # ==========================================================================
+    # Initialisation des clés de session_state pour tous les modèles et données
+    # ==========================================================================
     if 'df' not in st.session_state:
         st.session_state['df'] = None
         st.session_state['split_date'] = None
         st.session_state['target'] = None
         st.session_state['features'] = None
-        st.session_state['df_prophet_ready'] = None
+        st.session_state['df_prophet_ready'] = None 
         st.session_state['rf_metrics_per_region'] = None
         st.session_state['rf_global_mean_metrics'] = None
+        st.session_state['xgb_metrics_per_region'] = None
+        st.session_state['xgb_global_mean_metrics'] = None
+        st.session_state['prophet_metrics_per_region'] = None
+        st.session_state['prophet_global_mean_metrics'] = None
+        st.session_state['prophet_forecast_df'] = None 
+
 
     st.write('## Classification du problème 📂')
-
     st.write("");st.write("") 
 
     st.markdown(""" <u>Type de problème et tâche de machine learning</u> : 
@@ -67,57 +75,86 @@ def intro():
     st.markdown(""" Avec **Random Forest**, **XGBoost** et **Prophet**, l’encodage n'apporte pas de bénéfices majeurs par rapport à une simple variable catégorielle (ex. hour ou dayofweek). 
                 De même, la normalisation des données n’a pas d’impact significatif sur la performance des modèles. Nous faisons le choix de laisser les variables sans normalisation et sans transformation variables cycliques.
             """)
+    
     # Bouton pour lancer le traitement des données et l'affichage
     if st.button("Charger et Traiter les Données"):
         with st.spinner("Chargement et traitement des données en cours..."):
-            # Décomposez le tuple retourné en variables séparées
+            # Assignation directe à 'df' et stockage sous la clé 'df' dans session_state
             df, split_date, target, features = load_process_dataset_modelisation() 
-            # CES LIGNES SONT CRUCIALES POUR LE STOCKAGE
+            
             st.session_state['df'] = df
             st.session_state['split_date'] = split_date
             st.session_state['target'] = target
             st.session_state['features'] = features
-            st.session_state['df_prophet_ready'] = df.reset_index().rename(columns={'Date + Heure': 'ds', 'Consommation (MW)': 'y'})
-    # ...
+            # df_prophet_ready utilise maintenant st.session_state['df']
+            st.session_state['df_prophet_ready'] = st.session_state['df'].reset_index().rename(columns={'Date + Heure': 'ds', 'Consommation (MW)': 'y'})
+        
         st.success("Données chargées et prétraitées avec succès !")
+        
         st.subheader("Aperçu du DataFrame après prétraitement :")
-        st.dataframe(df.sample(10)) 
+        st.dataframe(st.session_state['df'].sample(10)) 
+        
         st.subheader("Paramètres de modélisation :")
-        st.write(f"**Date de séparation (split_date) :** {split_date}")
-        st.write(f"**Variable cible (target) :** `{target}`")
+        st.write(f"**Date de séparation (split_date) :** {st.session_state['split_date']}")
+        st.write(f"**Variable cible (target) :** `{st.session_state['target']}`")
         st.write(f"**Variables explicatives (features) :**")
-        st.write(features)
+        st.write(st.session_state['features'])
 
+        st.subheader("Aperçu du DataFrame pour Prophet (ds, y) :")
+        st.dataframe(st.session_state['df_prophet_ready'][['ds', 'y']].head())
 
-    if st.button("Lancer l'entraînement et l'évaluation RandomForest"):
-        if 'df' not in st.session_state:
-            st.warning("Veuillez d'abord charger et traiter les données.")
-        else:
-            df = st.session_state['df']
+    # ======================================================================
+    # Nouveau bouton pour entraîner RF et XGBoost ensemble
+    # ======================================================================
+    # Vérifie si les données sont chargées avant d'afficher ce bouton
+    if st.session_state['df'] is not None: 
+        if st.button("Lancer l'entraînement et l'évaluation des modèles (RF & XGBoost)"):
+            # Récupérer les données de session_state pour les passer à la fonction RF_XGB
+            df = st.session_state['df'] 
             split_date = st.session_state['split_date']
             target = st.session_state['target']
             features = st.session_state['features']
 
-            with st.spinner("Entraînement et évaluation des modèles RandomForest en cours..."):
-                # Appel de la nouvelle fonction adaptée
-                rf_metrics_df_per_region, rf_global_mean_metrics = random_forest (df, split_date, target, features)
-
+            # --- Entraînement et évaluation RandomForest ---
+            with st.spinner("Entraînement et évaluation du modèle RandomForest en cours..."):
+                # Appel de la fonction renommée RF_XGB pour RandomForest
+                rf_metrics_df_per_region, rf_global_mean_metrics = RF_XGB("RandomForest", df, split_date, target, features)
+                
+                st.session_state['rf_metrics_per_region'] = rf_metrics_df_per_region
+                st.session_state['rf_global_mean_metrics'] = rf_global_mean_metrics
             st.success("Évaluation RandomForest terminée !")
+            
+            st.markdown("---") # Séparateur visuel entre les modèles
 
+            # --- Entraînement et évaluation XGBoost ---
+            with st.spinner("Entraînement et évaluation du modèle XGBoost en cours..."):
+                # Appel de la fonction renommée RF_XGB pour XGBoost
+                xgb_metrics_df_per_region, xgb_global_mean_metrics = RF_XGB("XGBoost", df, split_date, target, features)
+
+                st.session_state['xgb_metrics_per_region'] = xgb_metrics_df_per_region
+                st.session_state['xgb_global_mean_metrics'] = xgb_global_mean_metrics
+            st.success("Évaluation XGBoost terminée !")
+        
+        # ======================================================================
+        # Affichage séparé des résultats RF et XGBoost
+        # Ces blocs s'exécutent si les résultats sont présents dans session_state
+        # ======================================================================
+        if st.session_state['rf_metrics_per_region'] is not None:
             st.subheader("Performances du modèle RandomForest par région :")
-            # Affichage du DataFrame avec style
-            st.dataframe(rf_metrics_df_per_region.set_index('Région').style.highlight_max(axis=0, subset=['R2 Score']).highlight_min(axis=0, subset=['Mean Absolute Error', 'MAPE (%)', 'Root Mean Squared Error', 'Bias']))
+            st.dataframe(st.session_state['rf_metrics_per_region'].set_index('Région').style.highlight_max(axis=0, subset=['R2 Score']).highlight_min(axis=0, subset=['Mean Absolute Error', 'MAPE (%)', 'Root Mean Squared Error', 'Bias']))
 
-            st.subheader("Moyennes des métriques d'évaluation (Global) :")
-            # Affichage des moyennes globales dans un petit tableau ou en texte
-            st.dataframe(rf_global_mean_metrics.to_frame(name='Moyenne').T) # Pour afficher comme un tableau horizontal
-            # Ou en texte :
-            # for metric, value in rf_global_mean_metrics.items():
-            #     st.write(f"**{metric}**: {value:.4f}")
+            st.subheader("Moyennes des métriques d'évaluation RandomForest (Global) :")
+            st.dataframe(st.session_state['rf_global_mean_metrics'].to_frame(name='Moyenne').T)
 
-            # Stocker les résultats si vous voulez les utiliser ailleurs
-            st.session_state['rf_metrics_per_region'] = rf_metrics_df_per_region
-            st.session_state['rf_global_mean_metrics'] = rf_global_mean_metrics
+        if st.session_state['xgb_metrics_per_region'] is not None:
+            st.markdown("---") 
+            st.subheader("Performances du modèle XGBoost par région :")
+            st.dataframe(st.session_state['xgb_metrics_per_region'].set_index('Région').style.highlight_max(axis=0, subset=['R2 Score']).highlight_min(axis=0, subset=['Mean Absolute Error', 'MAPE (%)', 'Root Mean Squared Error', 'Bias']))
+
+            st.subheader("Moyennes des métriques d'évaluation XGBoost (Global) :")
+            st.dataframe(st.session_state['xgb_global_mean_metrics'].to_frame(name='Moyenne').T)
+    else:
+        st.info("Cliquez sur 'Charger et Traiter les Données' pour commencer à visualiser et modéliser.")
 
     
 def load_process_dataset_modelisation():
@@ -125,7 +162,13 @@ def load_process_dataset_modelisation():
     file_id = "1wiXdpj6XHzB1eRxRbvcnsgE21ukVBvXs"  # Ton ID de fichier extrait
     url = f"https://drive.google.com/uc?id={file_id}"  # Lien de téléchargement direct
     output = "COMPILATION_CONSO_TEMP_POP_2.csv"
-    gdown.download(url, output, quiet=False)
+    
+    try:
+        gdown.download(url, output, quiet=False)
+    except Exception as e:
+        st.error(f"Erreur lors du téléchargement du fichier : {e}")
+        st.stop() 
+
     df= pd.read_csv(output, sep=';', on_bad_lines="skip", encoding="utf-8",low_memory=False)
     
     # Filtrer les données temporelles pour se concentrer sur une période pertinente et enlever la Corse
@@ -175,59 +218,83 @@ def load_process_dataset_modelisation():
 
     return df, split_date, target, features
 
-def random_forest (df, split_date, target, features):
 
-    results = [] # Pour stocker les métriques par région
-    # all_y_test_RF et all_y_pred_RF peuvent être gérés ici si nécessaire pour des agrégations globales,
-    # mais pour le tableau par région, ils ne sont pas directement nécessaires au retour.
-
+def RF_XGB(model_name, df, split_date, target, features):
+    """
+    Entraîne un modèle (RandomForest ou XGBoost) pour chaque région et évalue ses performances.
+    Args:
+        model_name (str): Nom du modèle à entraîner ("RandomForest" ou "XGBoost").
+        df (pd.DataFrame): DataFrame contenant les données prétraitées.
+        split_date (datetime): Date de séparation pour les ensembles d'entraînement/test.
+        target (str): Nom de la colonne cible.
+        features (list): Liste des noms des colonnes explicatives.
+    Returns:
+        tuple: DataFrame des métriques par région et Series des métriques moyennes globales.
+    """
+    results = []
     regions = df['Région'].unique()
 
-    # Diviser le DataFrame global en ensembles d'entraînement et de test
+    # Diviser le DataFrame global en ensembles d'entraînement et de test une seule fois
     train_df = df[df.index < split_date]
     test_df = df[df.index >= split_date]
 
     for region in regions:
-        # Affichage pour Streamlit, remplace votre print()
-        st.write(f"Entraînement et évaluation pour la région : **{region}**") 
+        st.write(f"Entraînement et évaluation du modèle **{model_name}** pour la région : **{region}**") 
         
         # Filtrer les données par région à partir des ensembles déjà splittés
         train_region_df = train_df[train_df['Région'] == region]
         test_region_df = test_df[test_df['Région'] == region]
 
-        # Préparer les données pour le modèle
+        if len(train_region_df) == 0 or len(test_region_df) == 0:
+            st.warning(f"Pas assez de données pour la région {region} pour le modèle {model_name}. Skipping.")
+            continue
+            
         X_train = train_region_df[features]
         y_train = train_region_df[target]
         X_test = test_region_df[features]
         y_test = test_region_df[target]
 
-        # Initialiser et entraîner le modèle RandomForest avec VOS hyperparamètres
-        model = RandomForestRegressor(
-            n_estimators=10, 
-            max_depth=10, 
-            min_samples_split=2, 
-            min_samples_leaf=1, 
-            random_state=42,
-            n_jobs=-1 # Utile pour Streamlit pour la performance
-        )
-        model.fit(X_train, y_train)
+        # ==============================================================================
+        # INSTANCIATION DU MODÈLE EN FONCTION DE SON NOM, AVEC HYPERPARAMÈTRES
+        # ==============================================================================
+        current_model = None
+        if model_name == "RandomForest":
+            current_model = RandomForestRegressor(
+                n_estimators=10, 
+                max_depth=10, 
+                min_samples_split=2, 
+                min_samples_leaf=1, 
+                random_state=42,
+                n_jobs=-1 # Utile pour Streamlit pour la performance
+            )
+        elif model_name == "XGBoost":
+            current_model = XGBRegressor(
+                n_estimators=100,             # Nombre d'estimateurs (arbres)
+                max_depth=5,                  # Profondeur maximale de l'arbre
+                learning_rate=0.1,            # Taux d'apprentissage
+                subsample=0.8,                # Proportion d'échantillons utilisés pour ajuster les arbres
+                colsample_bytree=0.8,         # Proportion de features utilisées pour ajuster les arbres
+                random_state=42,
+                n_jobs=-1
+            )
+        else:
+            st.error(f"Modèle non supporté pour l'entraînement : {model_name}")
+            continue 
+        
+        current_model.fit(X_train, y_train)
 
-        # Faire des prédictions
-        predictions = model.predict(X_test)
-
-        # all_y_test_RF et all_y_pred_RF pourraient être agrégés ici si vous avez besoin des métriques globales
-        # pour TOUTES les régions combinées à la fin. Pour le tableau par région, ce n'est pas nécessaire.
+        predictions = current_model.predict(X_test)
         
         # Calculer les métriques
         mse = mean_squared_error(y_test, predictions)
         rmse = np.sqrt(mse)
         mae = mean_absolute_error(y_test, predictions)
-        mape = mean_absolute_percentage_error(y_test, predictions) * 100 # Multiplier par 100 pour un %
+        mape = mean_absolute_percentage_error(y_test, predictions) * 100 
         r2 = r2_score(y_test, predictions)
         
         # Moyennes des valeurs réelles et prédites
         mean_y_test = np.mean(y_test)
-        mean_y_pred = np.mean(predictions) # C'est 'predictions' ici
+        mean_y_pred = np.mean(predictions) 
         # Calcul du Bias
         bias = mean_y_pred - mean_y_test
 
@@ -239,25 +306,21 @@ def random_forest (df, split_date, target, features):
             'Mean Squared Error': mse,
             'Root Mean Squared Error': rmse,
             'Mean Absolute Error': mae,
-            'MAPE (%)': mape, # Renommé pour correspondre au %
+            'MAPE (%)': mape, 
             'R2 Score': r2
         }
         
-        # Ajouter les importances des features
-        for feature, importance in zip(X_train.columns, model.feature_importances_): # Utilisez X_train.columns
-            result[f'Importance {feature}'] = importance
+        # Ajouter les importances des features si le modèle le supporte
+        if hasattr(current_model, 'feature_importances_'):
+            for feature, importance in zip(X_train.columns, current_model.feature_importances_): 
+                result[f'Importance {feature}'] = importance
         
         results.append(result)
         
-        # Les print() sont remplacés par st.write() si vous voulez des affichages intermédiaires par région
-        # Mais un tableau final est généralement préféré dans Streamlit.
-
     results_df = pd.DataFrame(results)
     
     # Calculer la moyenne des métriques globales (pour toutes les régions)
-    # Assurez-vous que les colonnes existent et sont numériques
     numeric_metrics_cols = ['R2 Score', 'Mean Squared Error', 'Root Mean Squared Error', 'Mean Absolute Error', 'MAPE (%)', 'Bias']
     mean_metrics = results_df[numeric_metrics_cols].mean()
 
-    return results_df, mean_metrics # Retourne le DF par région et les moyennes globales
-    
+    return results_df, mean_metrics
