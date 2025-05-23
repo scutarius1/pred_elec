@@ -28,15 +28,10 @@ def intro():
         st.session_state['split_date'] = None
         st.session_state['target'] = None
         st.session_state['features'] = None
-        st.session_state['df_prophet_ready'] = None 
         st.session_state['rf_metrics_per_region'] = None
         st.session_state['rf_global_mean_metrics'] = None
         st.session_state['xgb_metrics_per_region'] = None
         st.session_state['xgb_global_mean_metrics'] = None
-        st.session_state['prophet_metrics_per_region'] = None
-        st.session_state['prophet_global_mean_metrics'] = None
-        st.session_state['prophet_forecast_df'] = None 
-
 
     st.write('## Classification du problème 📂')
     st.write("");st.write("") 
@@ -86,9 +81,7 @@ def intro():
             st.session_state['split_date'] = split_date
             st.session_state['target'] = target
             st.session_state['features'] = features
-            # df_prophet_ready utilise maintenant st.session_state['df']
-            st.session_state['df_prophet_ready'] = st.session_state['df'].reset_index().rename(columns={'Date + Heure': 'ds', 'Consommation (MW)': 'y'})
-        
+ 
         st.success("Données chargées et prétraitées avec succès !")
         
         st.subheader("Aperçu du DataFrame après prétraitement :")
@@ -99,9 +92,6 @@ def intro():
         st.write(f"**Variable cible (target) :** `{st.session_state['target']}`")
         st.write(f"**Variables explicatives (features) :**")
         st.write(st.session_state['features'])
-
-        st.subheader("Aperçu du DataFrame pour Prophet (ds, y) :")
-        st.dataframe(st.session_state['df_prophet_ready'][['ds', 'y']].head())
 
     # ======================================================================
     # Nouveau bouton pour entraîner RF et XGBoost ensemble
