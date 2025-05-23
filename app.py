@@ -6,7 +6,6 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 import gdown
-import time
 
 #import Explo_Viz , considération data cleaning & seeking
 
@@ -18,16 +17,6 @@ from utils import modelisation
 # ⚙️ LOAD & PREPROCESS ⚙️ #
 ##########################
 
-def log_perf(func):
-    import time
-    def wrapper(*args, **kwargs):
-        start = time.perf_counter()
-        result = func(*args, **kwargs)
-        end = time.perf_counter()
-        print(f"[perf] {func.__name__} exécutée en {end - start:.2f} secondes")
-        return result
-    return wrapper
-@log_perf
 @st.cache_data
 def load_and_preprocess_data():
     """Télécharge et prétraite les données depuis Google Drive."""
@@ -47,7 +36,7 @@ def load_and_preprocess_data():
     df_energie = Explo_Viz.preprocess_data2(df_cons_preprocessed)
     df_temp = Explo_Viz.load_temp()  # Charger les données de température
     return df_cons_preprocessed, df_energie, df_temp #ajout de df_energie
-@log_perf
+
 def main():
     #st.title("Prédiction de Consommation Electrique en France")
     st.sidebar.title("⚡⚡ Prédiction Conso Electrique en France ⚡⚡")

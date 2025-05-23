@@ -71,6 +71,32 @@ def intro():
                 De même, la normalisation des données n’a pas d’impact significatif sur la performance des modèles. Nous faisons le choix de laisser les variables sans normalisation et sans transformation variables cycliques.
             """)
     
+    st.write('#### Fine tunning - Hyperparamètres ')
+    st.write("Pour une approche plus méthodique dans la comparaison des 2 modèles basés sur des arbres de décisions et travailler avec les meilleurs paramètrages, " \
+    "nous avons utilisé **Grid Search**. Pour alléger le besoin de puissance de calcul demandés ci-après, nous laisserons laisserons les paramètres suivants."
+    "C'est un compromis entre une exigence de mémoire acceptable pour ce projet streamlit en ligne et des score élevés des métriques observées ")
+    
+    code = '''
+                if model_name == "RandomForest":
+            current_model = RandomForestRegressor(
+                n_estimators=8, # Nombre d'arbres dans la forêt. Plus il y en a, plus le modèle est robuste mais lent.
+                max_depth=8, # Profondeur maximale de chaque arbre. Contrôle la complexité du modèle pour éviter le surapprentissage.
+                min_samples_split=2, # Nombre minimum d'échantillons requis pour diviser un nœud interne.
+                min_samples_leaf=1, # Nombre minimum d'échantillons requis pour qu'un nœud soit une feuille.
+                random_state=42, # Graine aléatoire pour la reproductibilité des résultats.
+                n_jobs=1 # Utile pour Streamlit pour la performance
+            )
+        elif model_name == "XGBoost":
+            current_model = XGBRegressor(
+                n_estimators=100,    # Nombre d'estimateurs (arbres)
+                max_depth=3,         # Profondeur maximale de l'arbre
+                learning_rate=0.05,  # Taux d'apprentissage. Réduit la contribution de chaque arbre pour rendre le modèle plus robuste.
+                random_state=42,
+                n_jobs=1 
+            )
+        '''
+    st.code(code, language='python')
+
     # Bouton pour lancer le traitement des données et l'affichage
     if st.button("Charger et Traiter les Données"):
         with st.spinner("Chargement et traitement des données en cours..."):
@@ -247,20 +273,20 @@ def RF_XGB(model_name, df, split_date, target, features):
         current_model = None
         if model_name == "RandomForest":
             current_model = RandomForestRegressor(
-                n_estimators=8, 
-                max_depth=8, 
-                min_samples_split=2, 
-                min_samples_leaf=1, 
-                random_state=42,
+                n_estimators=8, # Nombre d'arbres dans la forêt. Plus il y en a, plus le modèle est robuste mais lent.
+                max_depth=8, # Profondeur maximale de chaque arbre. Contrôle la complexité du modèle pour éviter le surapprentissage.
+                min_samples_split=2, # Nombre minimum d'échantillons requis pour diviser un nœud interne.
+                min_samples_leaf=1, # Nombre minimum d'échantillons requis pour qu'un nœud soit une feuille.
+                random_state=42, # Graine aléatoire pour la reproductibilité des résultats.
                 n_jobs=1 # Utile pour Streamlit pour la performance
             )
         elif model_name == "XGBoost":
             current_model = XGBRegressor(
-                n_estimators=100,             # Nombre d'estimateurs (arbres)
-                max_depth=3,                  # Profondeur maximale de l'arbre
-                learning_rate=0.05,            # Taux d'apprentissage
+                n_estimators=100,    # Nombre d'estimateurs (arbres)
+                max_depth=3,         # Profondeur maximale de l'arbre
+                learning_rate=0.05,  # Taux d'apprentissage. Réduit la contribution de chaque arbre pour rendre le modèle plus robuste.
                 random_state=42,
-                n_jobs=1    
+                n_jobs=1 
             )
         else:
             st.error(f"Modèle non supporté pour l'entraînement : {model_name}")

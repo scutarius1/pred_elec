@@ -12,17 +12,6 @@ from scipy.stats import spearmanr
 # ⚙️ PREPROCESSING 1       ⚙️ #
 ################################
 
-def log_perf(func):
-    import time
-    def wrapper(*args, **kwargs):
-        start = time.perf_counter()
-        result = func(*args, **kwargs)
-        end = time.perf_counter()
-        print(f"[perf] {func.__name__} exécutée en {end - start:.2f} secondes")
-        return result
-    return wrapper
-
-@log_perf
 @st.cache_data
 def preprocess_data(df_cons):
 
@@ -46,7 +35,7 @@ def preprocess_data(df_cons):
 # #####################################
 # ⚙️ VARIATIONS ET PHASAGES       ⚙️  #
 #######################################
-@log_perf
+
 @st.cache_data
 def create_regional_plots(df_cons_preprocessed, annee, mois, jour, frequence_resample, regions_selected):
     """Crée des graphiques comparatifs pour les régions sélectionnées (sans prétraitement)."""
@@ -127,7 +116,7 @@ def create_regional_plots(df_cons_preprocessed, annee, mois, jour, frequence_res
 # ############################
 # ⚙️ TAUX DE COUVERTURE    ⚙️#
 ##############################
-@log_perf
+
 @st.cache_data
 def create_barplot(df_cons_preprocessed):
     """Crée un graphique en barres empilées pour le taux de couverture (sans prétraitement)."""
@@ -155,8 +144,6 @@ def create_barplot(df_cons_preprocessed):
 # ⚙️ PREPROCESSING 2 & LOAD TEMPERATURES  ⚙️#
 ############################################
 
-#@st.cache_data 
-@log_perf
 @st.cache_data
 def compute_df_st2(df_energie):
     #Calcule df_st2 : Consommation agrégée à la maille mois et année
@@ -171,7 +158,7 @@ def aggregate_hourly_data(df_energie):
     df_st1 = df_st1.groupby(['Date', 'Saison', 'Région', 'Année', 'Mois', 'Plage Horaire']).sum().reset_index()
     
     return df_st1  
-@log_perf
+
 @st.cache_data
 def load_temp():
     """Télécharge et prétraite les données depuis Google Drive."""
@@ -182,7 +169,7 @@ def load_temp():
     gdown.download(url, output, quiet=False)
     df_temp = pd.read_csv(output, sep=';')
     return df_temp
-@log_perf
+
 @st.cache_data
 def preprocess_data2(df_cons):
     df_energie = df_cons.copy()
@@ -228,7 +215,7 @@ def preprocess_data2(df_cons):
 # ###############################
 # ⚙️ BOX PLOT TEMPERATURES    ⚙️#
 #################################
-@log_perf
+
 @st.cache_data
 def create_boxplot(df_energie, df_temp):
     """Crée un graphique avec boxplot pour la consommation et un swarmplot pour la température moyenne par mois."""
@@ -287,7 +274,7 @@ def create_boxplot(df_energie, df_temp):
 # ###############################
 # ⚙️ BOX PLOT SAISONS        ⚙️#
 #################################
-@log_perf
+
 @st.cache_data
 def create_boxplot_season(df_st1):
     """Crée un boxplot Streamlit pour la consommation par plage horaire et saison."""
@@ -312,7 +299,7 @@ def create_boxplot_season(df_st1):
 # ⚙️ PLOT VARIATION ANNUELLE  ⚙️#
 #################################
 # Créer un graphique en ligne pour la consommation par mois et année
-@log_perf
+
 @st.cache_data
 def create_annual_plot(df_st2):
     """Crée un graphique de consommation annuelle par mois pour chaque année."""
@@ -332,7 +319,7 @@ def create_annual_plot(df_st2):
 # ###############################
 # ⚙️     TEST STATISTIQUES    ⚙️#
 #################################
-@log_perf
+
 @st.cache_data
 def Test_corr(df_st3):
     """
@@ -351,8 +338,6 @@ def Test_corr(df_st3):
     }
     return corr_results, df_st3
 
-#####UPDATE####
-@log_perf
 @st.cache_data
 def Test_corr_temp(df_corr01):
     """

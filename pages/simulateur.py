@@ -6,8 +6,6 @@ import os
 # import seaborn as sns # Non utilisé ici, peut être supprimé
 import plotly.express as px
 
-# --- FONCTIONS CACHÉES (à placer en haut du script) ---
-
 @st.cache_data
 def load_and_preprocess_future_data():
     """
@@ -73,7 +71,12 @@ def load_model_for_region(model_choice, region):
 # --- DÉBUT DE L'APPLICATION STREAMLIT ---
 
 st.title("Simulateur de Consommation Future")
-
+st.markdown(""" 
+            Nous récupérons le fichier des températures futures (voir "Pré-traitement des données"), 
+            effectuons un rapide processing pour l'aligner sur la mise en forme utilisée lors de l'entrainement 
+            et la génération de nos **modèles régionaux de Régression** (RF_NomRegion.joblib, XGB_NomRegion.joblib, etc)
+            """)
+    
 st.markdown("<hr style='border: 2px solid #4CAF50;'>", unsafe_allow_html=True)
 st.markdown('<h5 style="text-align: center; color: #4CAF50;">🔎 Votre besoin de prévision</h5>', unsafe_allow_html=True)
 
