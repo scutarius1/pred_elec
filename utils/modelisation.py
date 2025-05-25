@@ -61,7 +61,7 @@ def intro():
 
                 Ces modèles sont connus pour bien gérer les séries temporelles.
                 """, unsafe_allow_html=True)
-    st.write('#### Series temporelles ⏲️ ? Split= “Hold Out”')
+    st.write('#### Series temporelles (hold-out)⏲️, encodage, standardisation ? ”')
     st.markdown("""
                 Objectif = Éviter la fuite de données. Si les données ne sont pas triées par date et que le train_test_split est aléatoire, 
                 il est possible que des observations très proches temporellement se répartissent entre Train et Test faussant l'entraînement. 
@@ -77,7 +77,6 @@ def intro():
     "C'est un compromis entre une exigence de mémoire acceptable pour ce projet streamlit en ligne et des score élevés des métriques observées ")
     
     code = '''
-                if model_name == "RandomForest":
             current_model = RandomForestRegressor(
                 n_estimators=8, # Nombre d'arbres dans la forêt. Plus il y en a, plus le modèle est robuste mais lent.
                 max_depth=8, # Profondeur maximale de chaque arbre. Contrôle la complexité du modèle pour éviter le surapprentissage.
@@ -85,8 +84,7 @@ def intro():
                 min_samples_leaf=1, # Nombre minimum d'échantillons requis pour qu'un nœud soit une feuille.
                 random_state=42, # Graine aléatoire pour la reproductibilité des résultats.
                 n_jobs=1 # Utile pour Streamlit pour la performance
-            )
-        elif model_name == "XGBoost":
+
             current_model = XGBRegressor(
                 n_estimators=100,    # Nombre d'estimateurs (arbres)
                 max_depth=3,         # Profondeur maximale de l'arbre
@@ -97,6 +95,7 @@ def intro():
         '''
     st.code(code, language='python')
 
+def lancement():
     # Bouton pour lancer le traitement des données et l'affichage
     if st.button("Charger et Traiter les Données"):
         with st.spinner("Chargement et traitement des données en cours..."):
@@ -267,9 +266,9 @@ def RF_XGB(model_name, df, split_date, target, features):
         X_test = test_region_df[features]
         y_test = test_region_df[target]
 
-        # ==============================================================================
-        # INSTANCIATION DU MODÈLE EN FONCTION DE SON NOM, AVEC HYPERPARAMÈTRES
-        # ==============================================================================
+        # =========================================
+        # INSTANCIATION DU MODÈLE + HYPERPARAMÈTRES
+        # =========================================
         current_model = None
         if model_name == "RandomForest":
             current_model = RandomForestRegressor(
@@ -335,3 +334,4 @@ def RF_XGB(model_name, df, split_date, target, features):
     mean_metrics = results_df[numeric_metrics_cols].mean()
 
     return results_df, mean_metrics
+

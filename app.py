@@ -266,8 +266,9 @@ def main():
 
     elif page == pages[4]:
         st.title("Modélisation")
-        
         modelisation.intro()
+        modelisation.lancement()
+
         
 #################################
 # ⚙️     DIVERS PROCESSING        ⚙️#

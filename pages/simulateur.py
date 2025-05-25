@@ -3,7 +3,6 @@ import pandas as pd
 from datetime import datetime
 import joblib
 import os
-# import seaborn as sns # Non utilisé ici, peut être supprimé
 import plotly.express as px
 
 @st.cache_data
@@ -25,11 +24,8 @@ def load_and_preprocess_future_data():
     df_future_temp['month'] = df_future_temp['Date'].dt.month
     df_future_temp['day_of_week'] = df_future_temp['Date'].dt.dayofweek
     df_future_temp['day_of_year'] = df_future_temp['Date'].dt.dayofyear
-    df_future_temp['week_of_year'] = df_future_temp['Date'].dt.isocalendar().week.astype(int) # Assure que c'est un int pour XGBoost
-    
-    # Correction: 'Date' est déjà l'index, ne pas le réassigner comme colonne.
-    # df_future_temp = df_future_temp.set_index('Date') # Ceci est déjà fait si 'time' est converti et renommé en 'Date' et devient l'index.
-    # Assurons-nous que 'Date' est l'index et que les colonnes sont bien ordonnées.
+    df_future_temp['week_of_year'] = df_future_temp['Date'].dt.isocalendar().week.astype(int) 
+
     df_future_temp = df_future_temp.set_index('Date')
     df_future_temp = df_future_temp[['Région', 'TMoy (°C)', 'Année', 'month', 'day_of_week', 'day_of_year', 'week_of_year']]
     
@@ -72,9 +68,11 @@ def load_model_for_region(model_choice, region):
 
 st.title("Simulateur de Consommation Future")
 st.markdown(""" 
-            Nous récupérons le fichier des températures futures (voir "Pré-traitement des données"), 
+            Nous récupérons le fichier des températures futures à la FREQUENCE JOUR (voir "Pré-traitement des données") ; 
             effectuons un rapide processing pour l'aligner sur la mise en forme utilisée lors de l'entrainement 
             et la génération de nos **modèles régionaux de Régression** (RF_NomRegion.joblib, XGB_NomRegion.joblib, etc)
+            
+            C'est à vous de jouer pour simuler une consommation future régionale 🚀 !
             """)
     
 st.markdown("<hr style='border: 2px solid #4CAF50;'>", unsafe_allow_html=True)
