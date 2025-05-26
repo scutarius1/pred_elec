@@ -17,11 +17,11 @@ from utils import modelisation
 # #########################
 # ⚙️ LOAD & PREPROCESS ⚙️ #
 ##########################
-def afficher_ram_utilisee():
-    process = psutil.Process(os.getpid())
-    mem_info = process.memory_info()
-    ram_mo = mem_info.rss / (1024 ** 2)  # rss = Resident Set Size
-    st.sidebar.metric("RAM utilisée", f"{ram_mo:.2f} Mo")
+#def afficher_ram_utilisee():
+    #process = psutil.Process(os.getpid())
+    #mem_info = process.memory_info()
+    #ram_mo = mem_info.rss / (1024 ** 2)  # rss = Resident Set Size
+    #st.sidebar.metric("RAM utilisée", f"{ram_mo:.2f} Mo")
 
 @st.cache_data
 def load_and_preprocess_data():
@@ -29,7 +29,7 @@ def load_and_preprocess_data():
     file_id = "1aqr3QQCoeQcNp8vrnvgaDHKXzlTYbFGC"  # Ton ID de fichier extrait
     url = f"https://drive.google.com/uc?id={file_id}"  # Lien de téléchargement direct
     output = "eco2mix-regional_reduced.csv"
-    gdown.download(url, output, quiet=False)
+    #gdown.download(url, output, quiet=False)
 
     if not os.path.exists(output):  # ⚠️ Evite redownload
         gdown.download(url, output, quiet=False)
@@ -52,11 +52,11 @@ def main():
     st.sidebar.title("Simulateur")
     st.sidebar.page_link("pages/simulateur.py", label="📈 Prédictions Régionales Futures")  
 
-    st.sidebar.markdown("---")
-    st.sidebar.write(f"Streamlit version: {st.__version__}")
-    afficher_ram_utilisee()
-    if st.sidebar.button("🔄 Actualiser"):
-        st.experimental_rerun()
+    #st.sidebar.markdown("---")
+    #st.sidebar.write(f"Streamlit version: {st.__version__}")
+    #afficher_ram_utilisee()
+    #if st.sidebar.button("🔄 Actualiser"):
+        #st.experimental_rerun()
     df_cons_preprocessed, df_energie, df_temp = load_and_preprocess_data() # AJOUTE
 
 
