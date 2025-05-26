@@ -2,6 +2,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 import io
 import os
+import psutil
 #ajout OS + if not os.path.exists
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -16,6 +17,11 @@ from utils import modelisation
 # #########################
 # ⚙️ LOAD & PREPROCESS ⚙️ #
 ##########################
+def afficher_ram_utilisee():
+    process = psutil.Process(os.getpid())
+    mem_info = process.memory_info()
+    ram_mo = mem_info.rss / (1024 ** 2)  # rss = Resident Set Size
+    st.sidebar.metric("RAM utilisée", f"{ram_mo:.2f} Mo")
 
 @st.cache_data
 def load_and_preprocess_data():
@@ -44,8 +50,9 @@ def main():
     #st.sidebar.title("Modélisation")
     #st.sidebar.page_link("pages/modelisation.py", label="Processing et Modélisation")
     st.sidebar.title("Simulateur")
-    st.sidebar.page_link("pages/simulateur.py", label="📈 Prédictions Régionales Futures")
-
+    st.sidebar.page_link("pages/simulateur.py", label="📈 Prédictions Régionales Futures")  
+    afficher_ram_utilisee()
+  
     df_cons_preprocessed, df_energie, df_temp = load_and_preprocess_data() # AJOUTE
 
 
