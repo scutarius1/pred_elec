@@ -202,6 +202,7 @@ def load_process_dataset_modelisation():
     df_filtered['Date + Heure'] = pd.to_datetime(df_filtered['Date + Heure'], errors='coerce')
     df_filtered = df_filtered.set_index('Date + Heure')
     df_filtered = df_filtered.sort_index()
+    #df_filtered = df_filtered.sort_values(by=[df.index.name, 'Région'])
 
     # Le DataFrame final à utiliser sera df_filtered
     df = df_filtered.copy() # On renomme df_filtered en df pour la cohérence avec le reste du code
