@@ -175,9 +175,9 @@ def lancement():
 @st.cache_data    
 def load_process_dataset_modelisation():
     #Télécharge et prétraite les données depuis Google Drive."""
-    file_id = "1wiXdpj6XHzB1eRxRbvcnsgE21ukVBvXs"  # Ton ID de fichier extrait
+    file_id = "1dunWvb7loR5kWYZwb8BX_lwmYMP0157q"  # Ton ID de fichier extrait
     url = f"https://drive.google.com/uc?id={file_id}"  # Lien de téléchargement direct
-    output = "COMPILATION_CONSO_TEMP_POP_2.csv"
+    output = "COMPILATION_CONSO_TEMP_POP_reduced.csv"
     
     try:
         gdown.download(url, output, quiet=False)
@@ -188,18 +188,19 @@ def load_process_dataset_modelisation():
     df= pd.read_csv(output, sep=';', on_bad_lines="skip", encoding="utf-8",low_memory=False)
     
     # Filtrer les données temporelles pour se concentrer sur une période pertinente et enlever la Corse
-    df_filtered = df[(df['Date + Heure'] >= '2016-01-01') & 
-                    (df['Date + Heure'] <= '2024-12-31')& (df['Région']!='Corse')] 
+    #df_filtered = df[(df['Date + Heure'] >= '2016-01-01') & 
+                    #(df['Date + Heure'] <= '2024-12-31')& (df['Région']!='Corse')] 
 
     # Identifier les lignes avec -0.00 dans les colonnes spécifiques
-    cols_to_check = ['TMoy (°C)', 'TMin (°C)', 'TMax (°C)']
-    neg_zero_mask = (df_filtered[cols_to_check] == -0.00)
+    #cols_to_check = ['TMoy (°C)', 'TMin (°C)', 'TMax (°C)']
+    #neg_zero_mask = (df_filtered[cols_to_check] == -0.00)
 
     # Appliquer la correction uniquement aux valeurs identifiées en utilisant .loc
-    df_filtered.loc[:, cols_to_check] = df_filtered.loc[:, cols_to_check].mask(neg_zero_mask, 0.00)
+    #df_filtered.loc[:, cols_to_check] = df_filtered.loc[:, cols_to_check].mask(neg_zero_mask, 0.00)
 
     # Remettre la colonne 'Date + Heure' en index
-    df = df_filtered.set_index('Date + Heure')
+    #df = df_filtered.set_index('Date + Heure')
+    df = df.set_index('Date + Heure')
     df.index = pd.to_datetime(df.index)
 
     # Conversion en datetime DATE pour extractions 
