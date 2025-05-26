@@ -211,7 +211,8 @@ def load_process_dataset_modelisation():
     df['day_of_week'] = df['Date'].dt.dayofweek  # Lundi = 0, Dimanche = 6
     df['day_of_year'] = df['Date'].dt.dayofyear
     df['week_of_year'] = df['Date'].dt.isocalendar().week
-    df['PlageHoraire']= df['Heure'].str[:2].astype(int) # Extraction de l'heure
+    df['PlageHoraire']= df['Heure']
+    #df['PlageHoraire']= df['Heure'].str[:2].astype(int) # Extraction de l'heure
     df = df.drop(columns=['Date', 'Heure', 'Date - Heure'])
 
     # Récupérer toutes les colonnes du DataFrame
