@@ -187,21 +187,10 @@ def load_process_dataset_modelisation():
 
     df= pd.read_csv(output, sep=';', on_bad_lines="skip", encoding="utf-8",low_memory=False)
     
-    # Filtrer les données temporelles pour se concentrer sur une période pertinente et enlever la Corse
-    #df_filtered = df[(df['Date + Heure'] >= '2016-01-01') & 
-                    #(df['Date + Heure'] <= '2024-12-31')& (df['Région']!='Corse')] 
-
-    # Identifier les lignes avec -0.00 dans les colonnes spécifiques
-    #cols_to_check = ['TMoy (°C)', 'TMin (°C)', 'TMax (°C)']
-    #neg_zero_mask = (df_filtered[cols_to_check] == -0.00)
-
-    # Appliquer la correction uniquement aux valeurs identifiées en utilisant .loc
-    #df_filtered.loc[:, cols_to_check] = df_filtered.loc[:, cols_to_check].mask(neg_zero_mask, 0.00)
-
     # Remettre la colonne 'Date + Heure' en index
-    #df = df_filtered.set_index('Date + Heure')
+    df['Date + Heure'] = pd.to_datetime(df['Date + Heure'], errors='coerce')  # gérer les erreurs
     df = df.set_index('Date + Heure')
-    df.index = pd.to_datetime(df.index)
+    df = df.sort_index()  # utile pour resample()
 
     # Conversion en datetime DATE pour extractions 
     df['Date'] = pd.to_datetime(df['Date'], format='%Y-%m-%d', errors='coerce')
@@ -213,7 +202,7 @@ def load_process_dataset_modelisation():
     df['week_of_year'] = df['Date'].dt.isocalendar().week
     df['PlageHoraire']= df['Heure']
     #df['PlageHoraire']= df['Heure'].str[:2].astype(int) # Extraction de l'heure
-    df = df.drop(columns=['Date', 'Heure', 'Date - Heure'])
+    df = df.drop(columns=['Date', 'Heure'])
 
     # Récupérer toutes les colonnes du DataFrame
     all_columns = df.columns.tolist()
