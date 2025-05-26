@@ -200,8 +200,8 @@ def load_process_dataset_modelisation():
 
     # Remettre la colonne 'Date + Heure' en index
     #df = df_filtered.set_index('Date + Heure')
-    #df = df.set_index('Date + Heure')
-    #df.index = pd.to_datetime(df.index)
+    df = df.set_index('Date + Heure')
+    df.index = pd.to_datetime(df.index)
 
     # Conversion en datetime DATE pour extractions 
     df['Date'] = pd.to_datetime(df['Date'], format='%Y-%m-%d', errors='coerce')
