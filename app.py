@@ -21,7 +21,6 @@ from utils import modelisation
 def load_and_preprocess_data():
     """Télécharge et prétraite les données depuis Google Drive."""
     file_id = "1aqr3QQCoeQcNp8vrnvgaDHKXzlTYbFGC"  # Ton ID de fichier extrait
-    
     url = f"https://drive.google.com/uc?id={file_id}"  # Lien de téléchargement direct
     output = "eco2mix-regional_reduced.csv"
     gdown.download(url, output, quiet=False)
