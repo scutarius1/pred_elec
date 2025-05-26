@@ -5,6 +5,8 @@ import pandas as pd
 import seaborn as sns  
 import datetime
 import gdown
+import plotly.graph_objects as go
+import plotly.express as px
 
 #Import des bibliothèques ML
 from sklearn.preprocessing import StandardScaler
@@ -18,6 +20,91 @@ from sklearn.model_selection import TimeSeriesSplit
 from sklearn.model_selection import GridSearchCV
 from prophet import Prophet
 
+def plot_date_order(df_to_check, title="Vérification de l'ordre temporel du DataFrame"):
+    """
+    Crée un nuage de points pour vérifier l'ordre temporel d'un DataFrame.
+    L'axe X est l'index (date), l'axe Y est la position ordinale.
+    """
+    if not isinstance(df_to_check.index, pd.DatetimeIndex):
+        st.warning("L'index du DataFrame n'est pas de type DatetimeIndex. La vérification peut être imprécise.")
+        return
+
+    # Créer une colonne pour la position ordinale
+    df_to_check['ordinal_position'] = range(len(df_to_check))
+
+    fig = px.scatter(df_to_check,
+                     x=df_to_check.index,
+                     y='ordinal_position',
+                     title=title,
+                     labels={'x': 'Date de l\'Index', 'ordinal_position': 'Position Ordinale dans le DataFrame'},
+                     template="plotly_white")
+    
+    if 'split_date' in st.session_state and st.session_state['split_date'] is not None:
+        try:
+            split_date_dt = pd.to_datetime(st.session_state['split_date'])
+            split_idx_pos = df_to_check.index.get_loc(split_date_dt, method='nearest')
+            if isinstance(split_idx_pos, slice):
+                split_idx_pos = split_idx_pos.start if split_idx_pos.start is not None else 0
+
+            fig.add_vline(x=split_date_dt, line_width=2, line_dash="dash", line_color="red",
+                          annotation_text=f"Split Date: {split_date_dt.strftime('%Y-%m-%d %H:%M')}",
+                          annotation_position="top right")
+            
+            if split_date_dt in df_to_check.index:
+                position_at_split = df_to_check.loc[split_date_dt]['ordinal_position']
+                if isinstance(position_at_split, pd.Series):
+                    position_at_split = position_at_split.iloc[0]
+                
+                fig.add_hline(y=position_at_split, 
+                              line_width=2, line_dash="dash", line_color="blue",
+                              annotation_text=f"Position: {split_idx_pos}",
+                              annotation_position="bottom right")
+
+        except Exception as e:
+            st.warning(f"Impossible d'ajouter la split_date au graphique: {e}")
+
+    fig.update_layout(hovermode="x unified")
+    st.plotly_chart(fig, use_container_width=True)
+    df_to_check.drop(columns=['ordinal_position'], inplace=True, errors='ignore')
+
+def plot_target_over_time_with_split(df_to_check, target_col, split_date, title="Visualisation de la série temporelle et du point de séparation"):
+    """
+    Trace la variable cible sur l'index de temps et marque la date de séparation.
+    Affiche une portion des données pour une meilleure lisibilité.
+    """
+    if not isinstance(df_to_check.index, pd.DatetimeIndex):
+        st.warning("L'index du DataFrame n'est pas de type DatetimeIndex.")
+        return
+
+    # Pour éviter de tracer un DataFrame trop grand (lent), on peut prendre un échantillon ou une période limitée.
+    # Par exemple, les dernières 3 années ou un échantillon stratifié
+    # Si le DataFrame est très grand, prenez un échantillon représentatif ou une sous-période
+    df_sample = df_to_check.tail(365 * 24 * 3) # Ex: les 3 dernières années d'heures
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(x=df_sample.index, y=df_sample[target_col], mode='lines', name=target_col))
+
+    fig.update_layout(title=title,
+                      xaxis_title="Date",
+                      yaxis_title=target_col,
+                      template="plotly_white")
+
+    # Ajouter une ligne verticale pour marquer la split_date
+    if split_date:
+        fig.add_vline(x=split_date, line_width=2, line_dash="dash", line_color="red",
+                      annotation_text=f"Date de Séparation: {split_date.strftime('%Y-%m-%d %H:%M')}",
+                      annotation_position="top right")
+
+    st.plotly_chart(fig, use_container_width=True)
+
+# Exemple d'utilisation dans votre `lancement()`:
+# Juste après que st.session_state['df'] et split_date soient mis à jour
+# if st.session_state['df'] is not None and st.session_state['split_date'] is not None:
+#     st.subheader("Visualisation de la variable cible par rapport au temps")
+#     plot_target_over_time_with_split(st.session_state['df'], 
+#                                       st.session_state['target'], 
+#                                       st.session_state['split_date'])
 
 def intro():
     # ==========================================================================
@@ -118,6 +205,22 @@ def lancement():
         st.write(f"**Variables explicatives (features) :**")
         st.write(st.session_state['features'])
 
+# --- AJOUT DES VISUALISATIONS ICI AVEC LA BONNE INDENTATION ---
+        # Ces blocs s'exécutent car nous sommes déjà dans le if st.button(...)
+        # et st.session_state['df'] vient d'être défini.
+        st.markdown("---")
+        st.subheader("Graphique 1: Vérification de l'ordre temporel (Index vs. Position Ordinale)")
+        # Assurez-vous que plot_date_order et plot_target_over_time_with_split sont définies dans votre script
+        # avant d'être appelées ici.
+        plot_date_order(st.session_state['df'], title="Vérification de l'ordre temporel du DataFrame après prétraitement")
+
+        st.markdown("---")
+        st.subheader("Graphique 2: Visualisation de la Variable Cible et de la Date de Séparation")
+        plot_target_over_time_with_split(st.session_state['df'], 
+                                          st.session_state['target'], 
+                                          st.session_state['split_date'])
+        # --- FIN DE L'AJOUT DES VISUALISATIONS ---
+
     # ======================================================================
     # Nouveau bouton pour entraîner RF et XGBoost ensemble
     # ======================================================================
@@ -192,18 +295,18 @@ def load_process_dataset_modelisation():
     #on_bad_lines="skip", encoding="utf-8"
     
     # Filtrer les données temporelles pour se concentrer sur une période pertinente et enlever la Corse
+    # Appliquez d'abord les filtres sur le DataFrame original
     df_filtered = df[(df['Date + Heure'] >= '2016-01-01') & 
-                 (df['Date + Heure'] <= '2024-12-31')& (df['Région']!='Corse')] 
-    # Remettre la colonne 'Date + Heure' en index
-    df['Date + Heure'] = pd.to_datetime(df['Date + Heure'], errors='coerce')  # gérer les erreurs
-    df = df_filtered.set_index('Date + Heure')
-    df = df.sort_index()  # utile pour resample()
+                     (df['Date + Heure'] <= '2024-12-31') & 
+                     (df['Région'] != 'Corse')].copy() # Utilisez .copy() pour éviter SettingWithCopyWarning
 
-    #df.index = pd.to_datetime(df.index)
-    # Remettre la colonne 'Date + Heure' en index
-    #df['Date + Heure'] = pd.to_datetime(df['Date + Heure'], errors='coerce')  # gérer les erreurs
-    #df = df.set_index('Date + Heure')
-    #df = df.sort_index()  # utile pour resample()
+    # Convertir 'Date + Heure' en datetime et la définir comme index pour le DataFrame filtré
+    df_filtered['Date + Heure'] = pd.to_datetime(df_filtered['Date + Heure'], errors='coerce')
+    df_filtered = df_filtered.set_index('Date + Heure')
+    df_filtered = df_filtered.sort_index()
+
+    # Le DataFrame final à utiliser sera df_filtered
+    df = df_filtered.copy() # On renomme df_filtered en df pour la cohérence avec le reste du code
 
 
     # Conversion en datetime DATE pour extractions 
@@ -214,9 +317,10 @@ def load_process_dataset_modelisation():
     df['day_of_week'] = df['Date'].dt.dayofweek  # Lundi = 0, Dimanche = 6
     df['day_of_year'] = df['Date'].dt.dayofyear
     df['week_of_year'] = df['Date'].dt.isocalendar().week
-    df['PlageHoraire']= df['Heure']
-    #df['PlageHoraire']= df['Heure'].str[:2].astype(int) # Extraction de l'heure
+    #df['PlageHoraire']= df['Heure']
+    df['PlageHoraire']= df['Heure'].str[:2].astype(int) # Extraction de l'heure
     df = df.drop(columns=['Date', 'Heure', 'Date - Heure'])
+    df = df.sort_index() #NOUVEAU
 
     # Récupérer toutes les colonnes du DataFrame
     all_columns = df.columns.tolist()
@@ -231,11 +335,36 @@ def load_process_dataset_modelisation():
     features = [col for col in all_columns if col != target and col not in exclude_columns]
 
     # Définir la proportion de l'ensemble de test
-    test_size = 0.20  # Pour 20%
+    #test_size = 0.20  # Pour 20%
     # Calculer la date de séparation
-    split_date = df.iloc[int(len(df) * (1 - test_size))].name
+    #split_date = df.iloc[int(len(df) * (1 - test_size))].name
     # Afficher la date de séparation
-    print(f"Date de séparation pour {int(test_size * 100)}% de test : {split_date}")
+    #print(f"Date de séparation pour {int(test_size * 100)}% de test : {split_date}")
+    #split_date = "2021-09-06 00:00:00"
+
+        # Définir la proportion de l'ensemble de test
+    test_size = 0.20  # Cela signifie 20% des données pour le test, et donc 80% pour l'entraînement.
+
+    # Calculer le nombre d'observations total
+    total_observations = len(df)
+
+    # Calculer le nombre d'observations dans l'ensemble d'entraînement (80%)
+    train_observations = int(total_observations * (1 - test_size))
+
+    # Calculer le nombre d'observations dans l'ensemble de test (20%)
+    test_observations = total_observations - train_observations
+
+    # Calculer la date de séparation en se basant sur la 80ème percentile des observations
+    # Le .name récupère la valeur de l'index (qui est la date) de cette ligne
+    split_date = df.iloc[train_observations - 1].name # Utilisez train_observations - 1 car iloc est 0-indexé
+
+    # Afficher les informations de séparation pour justifier les volumes
+    print(f"Volume total des entrées (observations) : {total_observations}")
+    print(f"Proportion d'entraînement désirée : {int((1 - test_size) * 100)}%")
+    print(f"Nombre d'observations pour l'entraînement : {train_observations} lignes")
+    print(f"Proportion de test désirée : {int(test_size * 100)}%")
+    print(f"Nombre d'observations pour le test : {test_observations} lignes")
+    print(f"Date de séparation : {split_date}")
 
     return df, split_date, target, features
 
@@ -339,4 +468,6 @@ def RF_XGB(model_name, df, split_date, target, features):
     mean_metrics = results_df[numeric_metrics_cols].mean()
 
     return results_df, mean_metrics
+
+
 
