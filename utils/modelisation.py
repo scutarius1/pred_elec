@@ -175,9 +175,12 @@ def lancement():
 @st.cache_data    
 def load_process_dataset_modelisation():
     #Télécharge et prétraite les données depuis Google Drive."""
-    file_id = "1dunWvb7loR5kWYZwb8BX_lwmYMP0157q"  # Ton ID de fichier extrait
+    file_id = "1wiXdpj6XHzB1eRxRbvcnsgE21ukVBvXs"  # Ton ID de fichier extrait
     url = f"https://drive.google.com/uc?id={file_id}"  # Lien de téléchargement direct
-    output = "COMPILATION_CONSO_TEMP_POP_reduced.csv"
+    output = "COMPILATION_CONSO_TEMP_POP_2.csv"
+    # Non reduced
+    # https://drive.google.com/file/d/1wiXdpj6XHzB1eRxRbvcnsgE21ukVBvXs/view?usp=sharing
+    #reduce : file_id = "1dunWvb7loR5kWYZwb8BX_lwmYMP0157q" // COMPILATION_CONSO_TEMP_POP_reduced.csv
     
     try:
         gdown.download(url, output, quiet=False)
@@ -185,12 +188,23 @@ def load_process_dataset_modelisation():
         st.error(f"Erreur lors du téléchargement du fichier : {e}")
         st.stop() 
 
-    df= pd.read_csv(output, sep=';', on_bad_lines="skip", encoding="utf-8",low_memory=False)
+    df= pd.read_csv(output, sep=';',low_memory=False)
+    #on_bad_lines="skip", encoding="utf-8"
     
+    # Filtrer les données temporelles pour se concentrer sur une période pertinente et enlever la Corse
+    df_filtered = df[(df['Date + Heure'] >= '2016-01-01') & 
+                 (df['Date + Heure'] <= '2024-12-31')& (df['Région']!='Corse')] 
     # Remettre la colonne 'Date + Heure' en index
     df['Date + Heure'] = pd.to_datetime(df['Date + Heure'], errors='coerce')  # gérer les erreurs
-    df = df.set_index('Date + Heure')
+    df = df_filtered.set_index('Date + Heure')
     df = df.sort_index()  # utile pour resample()
+
+    #df.index = pd.to_datetime(df.index)
+    # Remettre la colonne 'Date + Heure' en index
+    #df['Date + Heure'] = pd.to_datetime(df['Date + Heure'], errors='coerce')  # gérer les erreurs
+    #df = df.set_index('Date + Heure')
+    #df = df.sort_index()  # utile pour resample()
+
 
     # Conversion en datetime DATE pour extractions 
     df['Date'] = pd.to_datetime(df['Date'], format='%Y-%m-%d', errors='coerce')
@@ -202,7 +216,7 @@ def load_process_dataset_modelisation():
     df['week_of_year'] = df['Date'].dt.isocalendar().week
     df['PlageHoraire']= df['Heure']
     #df['PlageHoraire']= df['Heure'].str[:2].astype(int) # Extraction de l'heure
-    df = df.drop(columns=['Date', 'Heure'])
+    df = df.drop(columns=['Date', 'Heure', 'Date - Heure'])
 
     # Récupérer toutes les colonnes du DataFrame
     all_columns = df.columns.tolist()
