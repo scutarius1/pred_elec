@@ -51,8 +51,9 @@ def main():
     #st.sidebar.page_link("pages/modelisation.py", label="Processing et Modélisation")
     st.sidebar.title("Simulateur")
     st.sidebar.page_link("pages/simulateur.py", label="📈 Prédictions Régionales Futures")  
-    
+
     st.sidebar.markdown("---")
+    st.sidebar.write(f"Streamlit version: {st.__version__}")
     afficher_ram_utilisee()
     if st.sidebar.button("🔄 Actualiser"):
         st.experimental_rerun()
