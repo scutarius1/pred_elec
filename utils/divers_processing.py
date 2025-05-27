@@ -153,21 +153,20 @@ def drias():
 #################################
 def cleaning():
     
-    st.header("Data Cleaning ✂️ 'Eco2mix'")
-  
-    st.markdown("""
-                Le Datacleaning : a été la part la plus importante en terme de préprocessing. 
-                En effet Pour avoir la timeserie la plus longue, nous avons inclu dans le dataset les données de consommation les plus récentes possible. 
-                Problème : ces données (de janvier 2023 à décembre 2024) n'ayant pas été consolidées par les équipes Data de RTE contrairement à notre dataset de base. 
-                nous devons procéder à un nettoyage des valeurs aberrantes après concatenation.""")
+    st.info("" \
+                "Le Datacleaning a été la part la plus importante en terme de préprocessing. En effet pour avoir la timeserie la plus longue, nous avons inclu dans le dataset les données de consommation les plus récentes possible. " \
+                "Problème : ces données (de janvier 2023 à décembre 2024) n'ont pas été consolidées par les équipes Data de EDF/RTE contrairement à notre dataset de base. " \
+                "Nous devons donc procéder à un nettoyage des valeurs aberrantes après concatenation.")
     
+    st.header("Data Cleaning ✂️ 'Eco2mix'")
+    st.write("Concatenation de Eco2mix Consolidé/Non Consolidé")
     ###### image ######
     img = load_image("consolide_vs_non.png")
     if img:
-            st.image(img, caption="On constate de l’impact de la consolidation dans la ‘propreté’ du dataset", use_container_width=True)
+            st.image(img, caption="Avant/Après data cleaning : On constate de l’impact de la consolidation dans la ‘propreté’ du dataset ", use_container_width=True)
     else:
             st.warning("❌ L’image est introuvable dans le dossier `pictures/`.")
-
+    st.write("Zoom sur Eco2mix Temps Réel (non consolidé):")
     img = load_image("outliers_eco2mix_temps_reel.png")
     if img:
             st.image(img, caption="outliers manifestement visibles", use_container_width=True)
@@ -218,5 +217,13 @@ def cleaning():
                 La méthode étant la fixation d'un seuil historique minimum avec une marge +10%, puis remplacement des outlier depassant ce seuil 
                 sur la plage temporelle concernée par la moyenne historique de cette même plage.
 
+                """)
+    st.markdown("""
+                Une fois les régions et périodes problématiques identifiées (avec l'aide de Plotly qui a été hyper pratique ), le remplacement des outliers s'est fait :
+
+                - Par [**Interpolation linéaire**](https://fr.wikipedia.org/wiki/Interpolation_lin%C3%A9aire) pour les valeurs nulles et les ruptures manifestes de tendance  
+                - Par [**imputation par la moyenne historique**](https://fr.wikipedia.org/wiki/Indicateur_de_tendance_centrale) principalement pour les valeurs anormalement basses.  
+                La méthode consiste à fixer un seuil historique minimum avec une marge de +10%, puis à remplacer les outliers dépassant ce seuil, sur la plage temporelle concernée,  
+                par la moyenne historique de cette même plage.
                 """)
     st.write("---")

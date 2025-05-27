@@ -33,31 +33,48 @@ def intro():
     st.write('## Classification du problème 📂')
     st.write("");st.write("") 
 
-    st.markdown(""" <u>Type de problème et tâche de machine learning</u> : 
-            Notre projet s’apparente à de la **prédiction de valeurs continues dans une suite temporelle** présentant plusieurs saisonnalités.
-                L'objectif est d'anticiper la demande en énergie en fonction du temps, des conditions météorologiques et d'autres facteurs exogènes.
+    st.markdown(""" 
+                <u>Type de problème et tâche de machine learning</u> : 
+
+                Pour rappel, notre projet s’apparente à de la **prédiction de valeurs continues dans une suite temporelle** présentant plusieurs saisonnalités.
+                L'objectif est d'anticiper la demande en énergie en fonction du temps, des conditions météorologiques et d'autres facteurs exogènes. 
+                
+                Nous avons donc traité et fusionné l'ensembles des données exposées précédemment dans un dataset regroupant nos variables explicatives :   
                 """,unsafe_allow_html=True)
+    st.write("Echantillon **.sample(10)** : ")
+    # --- MODIFICATION ICI ---
+    if st.session_state['df'] is not None:
+        st.dataframe(st.session_state['df'].sample(5))  # Accéder à df via session_state
+    else:
+        st.info("Veuillez charger les données en cliquant sur le bouton 'Charger et Traiter les Données' dans la section 'Lancement' pour voir un échantillon.")
+    # --- FIN MODIFICATION ---
+
+    st.markdown(""" Pour simplifier cette restitution, nous allons entraîner puis comparer nos modèles que sur la **maille horaire**. 
+                La robustesse à long terme sera limité à la fin de la période de test du jeu de données. 
+                """,unsafe_allow_html=True)
+    st.write("---")
     st.write('#### Choix des métriques de performance 🎯')
             
     st.markdown("""La métrique **MAPE (Mean Absolute Percentage Error)** est notre métrique principale car elle est facilement interprétable et comparable avec d’autres modèles.
                 Nous cherchons d’une part à pénaliser les grandes erreurs compte tenu de l’enjeu de prédiction de consommation au plus juste (**RMSE** faible), 
                 tout en pouvant comparer facilement nos différents modèles sur la base de % de variation (MAPE). Enfin, la qualité globale du modèle doit aussi être élevée pour tenir compte de manière équilibrée des spécificités régionales (**Score R2**).""") 
     st.markdown("""
-                Pour couvrir l’ensemble des KPI pertinents sur ce problème de régression nous allons donc récupérer chacun des indicateurs type :
-                
-                - Erreurs absolues et relatives (**MAE, MAPE**)
-                - Erreurs quadratiques (**MSE, RMSE**)
-                - Qualité d’ajustement (**R² Score**)
+                Pour couvrir l’ensemble des KPI pertinents sur ce problème de régression, nous allons donc récupérer chacun des indicateurs type :
+
+                - Erreurs absolues et relatives : **[MAE (Mean Absolute Error)](https://en.wikipedia.org/wiki/Mean_absolute_error)**, **[MAPE](https://en.wikipedia.org/wiki/Mean_absolute_percentage_error)**
+                - Erreurs quadratiques : **[MSE (Erreur quadratique moyenne)](https://fr.wikipedia.org/wiki/Erreur_quadratique_moyenne)**, **[RMSE (Racine de l'erreur quadratique moyenne)](https://fr.wikipedia.org/wiki/Racine_de_l%27erreur_quadratique_moyenne)**
+                - Qualité d’ajustement : **[R² Score (Coefficient de détermination)](https://fr.wikipedia.org/wiki/Coefficient_de_d%C3%A9termination)**
                 """)
-    st.write('#### Choix des modèles Machine Learning 🤖 ')
+    st.write("---")
+    st.write('#### Choix des modèles Machine Learning 🤖 ')    
     st.markdown("""
                 De façon plus limitée que le rapport d'étude, nous ne présenterons ici que :
 
-                - <span style="color:blue;">**Prophet**</span> : pour challenger notamment la détection des saisonnalités et la robustesse à long terme.
-                - <span style="color:blue;">**RandomForest**</span>, <span style="color:blue;">**XG Boost**</span> : 2 autres modèles, plus généralistes et simples à entraîner
+                - [**Prophet**](https://facebook.github.io/prophet/docs/quick_start.html) : pour challenger notamment la détection des saisonnalités et la robustesse à long terme.  
+                - [**Random Forest**](https://fr.wikipedia.org/wiki/For%C3%AAt_d%27arbres_d%C3%A9cisionnels), [**XGBoost**](https://en.wikipedia.org/wiki/XGBoost) : deux autres modèles, plus généralistes et simples à entraîner.
 
                 Ces modèles sont connus pour bien gérer les séries temporelles.
-                """, unsafe_allow_html=True)
+                """)
     st.write('#### Series temporelles (hold-out)⏲️, encodage, standardisation ? ”')
     st.markdown("""
                 Objectif = Éviter la fuite de données. Si les données ne sont pas triées par date et que le train_test_split est aléatoire, 
@@ -67,7 +84,7 @@ def intro():
     st.markdown(""" Avec **Random Forest**, **XGBoost** et **Prophet**, l’encodage n'apporte pas de bénéfices majeurs par rapport à une simple variable catégorielle (ex. hour ou dayofweek). 
                 De même, la normalisation des données n’a pas d’impact significatif sur la performance des modèles. Nous faisons le choix de laisser les variables sans normalisation et sans transformation variables cycliques.
             """)
-    
+    st.write("---")
     st.write('#### Fine tunning - Hyperparamètres ')
     st.write("Pour une approche méthodique dans la comparaison des 2 modèles basés sur des arbres de décisions et travailler avec les meilleurs paramètrages, " \
     "nous avons utilisé **Grid Search**. Pour alléger le besoin de puissance de calcul demandés ci-après, nous laisserons laisserons les paramètres suivants : "
@@ -75,15 +92,15 @@ def intro():
     
     code = '''
             current_model = RandomForestRegressor(
-                n_estimators=8, # Nombre d'arbres dans la forêt. Plus il y en a, plus le modèle est robuste mais lent.
-                max_depth=8, # Profondeur maximale de chaque arbre. Contrôle la complexité du modèle pour éviter le surapprentissage.
+                n_estimators=7, # Nombre d'arbres dans la forêt. Plus il y en a, plus le modèle est robuste mais lent.
+                max_depth=7, # Profondeur maximale de chaque arbre. Contrôle la complexité du modèle pour éviter le surapprentissage.
                 min_samples_split=2, # Nombre minimum d'échantillons requis pour diviser un nœud interne.
                 min_samples_leaf=1, # Nombre minimum d'échantillons requis pour qu'un nœud soit une feuille.
                 random_state=42, # Graine aléatoire pour la reproductibilité des résultats.
                 n_jobs=1 # Utile pour Streamlit pour la performance
 
             current_model = XGBRegressor(
-                n_estimators=150,    # Nombre d'estimateurs (arbres)
+                n_estimators=100,    # Nombre d'estimateurs (arbres)
                 max_depth=3,         # Profondeur maximale de l'arbre
                 learning_rate=0.05,  # Taux d'apprentissage. Réduit la contribution de chaque arbre pour rendre le modèle plus robuste.
                 random_state=42,
@@ -95,11 +112,11 @@ def intro():
     img = load_image("learning_curve_xgboost.png")
     if img:
             st.image(img, caption="A titre d'exemple, la courbe d'apprentissage XGBoost, et le score RMSE en fonction du nombre d'itérations." \
-            "Et où l'on voit que n_estimator = 150 peut suffire", use_container_width=True)
+            "Et où l'on voit que n_estimator = 100 peut suffire", use_container_width=True)
     else:
             st.warning("❌ L’image est introuvable dans le dossier `pictures/`.")
-    ##################
-
+    st.write("---")
+    st.write('## Traitement du dataset ')
 
 def lancement():
     # Bouton pour lancer le traitement des données et l'affichage
@@ -172,7 +189,7 @@ def lancement():
             st.subheader("Performances du modèle RandomForest par région :")
             st.dataframe(st.session_state['rf_metrics_per_region'].set_index('Région').style.highlight_max(axis=0, subset=['R2 Score']).highlight_min(axis=0, subset=['Mean Absolute Error', 'MAPE (%)', 'Root Mean Squared Error', 'Bias']))
 
-            st.subheader("Moyennes des métriques d'évaluation RandomForest (Global) :")
+            st.subheader("➗ Moyennes des métriques d'évaluation RandomForest (Global) :")
             st.dataframe(st.session_state['rf_global_mean_metrics'].to_frame(name='Moyenne').T)
 
         if st.session_state['xgb_metrics_per_region'] is not None:
@@ -180,7 +197,7 @@ def lancement():
             st.subheader("Performances du modèle XGBoost par région :")
             st.dataframe(st.session_state['xgb_metrics_per_region'].set_index('Région').style.highlight_max(axis=0, subset=['R2 Score']).highlight_min(axis=0, subset=['Mean Absolute Error', 'MAPE (%)', 'Root Mean Squared Error', 'Bias']))
 
-            st.subheader("Moyennes des métriques d'évaluation XGBoost (Global) :")
+            st.subheader("➗ Moyennes des métriques d'évaluation XGBoost (Global) :")
             st.dataframe(st.session_state['xgb_global_mean_metrics'].to_frame(name='Moyenne').T)
 
         if (
@@ -309,8 +326,8 @@ def RF_XGB(model_name, df, split_date, target, features):
         current_model = None
         if model_name == "RandomForest":
             current_model = RandomForestRegressor(
-                n_estimators=8, # Nombre d'arbres dans la forêt. Plus il y en a, plus le modèle est robuste mais lent.
-                max_depth=8, # Profondeur maximale de chaque arbre. Contrôle la complexité du modèle pour éviter le surapprentissage.
+                n_estimators=7, # Nombre d'arbres dans la forêt. Plus il y en a, plus le modèle est robuste mais lent.
+                max_depth=7, # Profondeur maximale de chaque arbre. Contrôle la complexité du modèle pour éviter le surapprentissage.
                 min_samples_split=2, # Nombre minimum d'échantillons requis pour diviser un nœud interne.
                 min_samples_leaf=1, # Nombre minimum d'échantillons requis pour qu'un nœud soit une feuille.
                 random_state=42, # Graine aléatoire pour la reproductibilité des résultats.
@@ -318,7 +335,7 @@ def RF_XGB(model_name, df, split_date, target, features):
             )
         elif model_name == "XGBoost":
             current_model = XGBRegressor(
-                n_estimators=150,    # Nombre d'estimateurs (arbres)
+                n_estimators=100,    # Nombre d'estimateurs (arbres)
                 max_depth=3,         # Profondeur maximale de l'arbre
                 learning_rate=0.05,  # Taux d'apprentissage. Réduit la contribution de chaque arbre pour rendre le modèle plus robuste.
                 random_state=42,
@@ -411,7 +428,7 @@ def plot_feature_importance(combined_results_df, features):
 def display_modeling_results_and_plots():
 
     st.write("---")
-    st.write("## 📈 Importance des Features pour les arbre de décisions")
+    st.subheader(" 🧩 Importance des Features pour les arbre de décisions")
     if st.button("Afficher l'Importance des Features"):
         if 'combined_results_df' in st.session_state and 'features_for_plot' in st.session_state:
             if st.session_state['combined_results_df'] is not None and st.session_state['features_for_plot'] is not None:
@@ -421,3 +438,26 @@ def display_modeling_results_and_plots():
                 st.warning("⚠️ Les données nécessaires au calcul des importances ne sont pas disponibles. Veuillez entraîner les modèles d'abord.")
         else:
             st.info("💡 Cliquez d'abord sur 'Charger et Traiter les Données' puis 'Entraîner les Modèles' avant d'afficher l’importance des features.")
+
+
+def conclusion():
+    ##################
+    #INTERPRETATION FEATURES
+    st.write("## ✅ Bilan ")
+    st.markdown(""" Les modèles RandomForest et XGBoost s’accordent sur l’importance déterminante de la température moyenne et maximale pour prédire la consommation électrique, 
+                reflétant l’impact du climat sur la demande (chauffage/climatisation). La plage horaire est également clé, capturant les variations journalières typiques. 
+                Les variables calendaires jouent un rôle secondaire (XGBoost y est néanmoins plus sensible ). Tandis que la population ne variant pas à cette échelle de temps, a peu d’influence 
+                """)
+    st.markdown(""" 
+                Comparatif des modèles :
+
+                **XGBoost** surpasse Random Forest avec un R² supérieur de 0,07, indiquant qu’il explique significativement mieux la variabilité de la consommation électrique.
+                Soit une meilleure capacité de XGBoost à capturer les variations fines et les non-linéarités. Ses erreurs (RMSE, MAE, MAPE) sont également plus faibles, traduisant des prédictions plus précises et un biais réduit (<u>moins de surestimation</u>.
+                A noter : 
+                - la différence de MAPE correspond à une amélioration d’environ 10% de la précision relative au profit de XG Boost
+                - XG Boost porte bien son nom en ce qu'il est également plus rapide à entrainer (sur ce jeu de données).
+
+                Cependant, Random Forest reste un modèle robuste, plus simple à paramétrer et interpréter, pouvant être préféré selon les contraintes opérationnelles. 
+                Le choix dépendra donc du compromis entre performance fine et simplicité d’usage.
+
+                """,unsafe_allow_html=True)

@@ -101,7 +101,7 @@ def main():
         st.write("")
         st.header("⚖️ Contexte")
         st.markdown(""" L’adéquation entre la production et la consommation d’électricité est au cœur des préoccupations d’un acteur de l’énergie comme EDF. 
-                 EDF, en tant que producteur et commercialisateur d’électricité est en effet un responsable d’équilibre vis-à-vis de RTE. 
+                 Ce dernier, en tant que producteur et commercialisateur d’électricité est en effet un responsable d’équilibre vis-à-vis de RTE. 
                  Cela signifie qu’il se doit d’assurer à tout instant un équilibre entre sa production et la consommation de ses clients, sous peine de pénalités. 
                  Pour se faire, construire un modèle de prévision de la consommation de ses clients est une activité essentielle au bon fonctionnement de EDF.""") 
         
@@ -135,7 +135,7 @@ def main():
                     Pour autant, 7 ans de données semble suffisant.
                     """,unsafe_allow_html=True)
               
-        st.write("### 🔎 Découverte de'Eco2Mix' - Notre dataset Principal")
+        st.write("### 🔎 A la découverte de'Eco2Mix' - Notre dataset Principal")
         st.markdown("""
                     Ce jeu de données, rafraîchi une fois par jour, présente les données régionales consolidées depuis janvier 2021 et définitives (de janvier 2013 à décembre 2020) issues de l'application éCO2mix. 
                     Elles sont élaborées à partir des comptages et complétées par des forfaits. Les données sont dites consolidées lorsqu'elles ont été vérifiées et complétées (livraison en milieu de M+1). 
@@ -167,7 +167,8 @@ def main():
 ####################################
 
     elif page == pages[1]:
-        st.header(" 🔺🔻 Inégalités Régionales : Mix Energétique et Capacités de Production 📊 "
+        st.info("L'ensemble des data visualisations présentées ici sont réalisées à partir de notre jeu de donnée principal dit 'Eco2mix'")
+        st.header(" 🔺🔻 Inégalités Régionales : Mix Energétique et Capacités de Production 🏭 "
         )
 
         st.write ("""En plus de ne pas avoir le même mix energétique (installations Eoliennes, Hyrdoliques, Nucléaires...), les régions sont pas toutes en capacité de couvrir leurs besoins quand certaines, à l'inverse, sont excédentaires: """)
@@ -230,6 +231,7 @@ def main():
 # ⚙️ DATAVIZ CORRELATIONS  ⚙️#
 #################################
     elif page == pages[2]:
+        st.info("L'ensemble des data visualisations présentées ici sont réalisées à partir de notre jeu de donnée principal dit 'Eco2mix' additionné ici des évolutions de températures 2016-2024 (source : météo France)")
         st.header("Saisonnalité et Consommation")
         
         st.write("""Ce graphique suivant montre l’évolution mensuelle de la consommation d’énergie entre 2013 et 2023. Au-delà du lien entre le mois de l'année et le niveeau de consommation, 
@@ -316,6 +318,7 @@ def main():
         modelisation.intro()
         modelisation.lancement()
         modelisation.display_modeling_results_and_plots()
+        modelisation.conclusion()
 
 #################################
 # ⚙️     DIVERS PROCESSING        ⚙️#
