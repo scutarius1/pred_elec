@@ -123,6 +123,14 @@ def lancement():
     # Nouveau bouton pour entraîner RF et XGBoost ensemble
     # ======================================================================
     # Vérifie si les données sont chargées avant d'afficher ce bouton
+#=====AJOUT FEATURES IMPORTANCE ==== 
+    # Initialiser l'état de session si ce n'est pas déjà fait
+    if 'combined_results_df' not in st.session_state:
+        st.session_state.combined_results_df = None
+    if 'features_list' not in st.session_state:
+        st.session_state.features_list = features # Stocker aussi les features
+#=====AJOUT FEATURES IMPORTANCE ==== 
+
     if st.session_state['df'] is not None: 
         if st.button("Lancer l'entraînement et l'évaluation des modèles (RF & XGBoost)"):
             # Récupérer les données de session_state pour les passer à la fonction RF_XGB
@@ -234,14 +242,6 @@ def load_process_dataset_modelisation():
     features = [col for col in all_columns if col != target and col not in exclude_columns]
 
     # Définir la proportion de l'ensemble de test
-    #test_size = 0.20  # Pour 20%
-    # Calculer la date de séparation
-    #split_date = df.iloc[int(len(df) * (1 - test_size))].name
-    # Afficher la date de séparation
-    #print(f"Date de séparation pour {int(test_size * 100)}% de test : {split_date}")
-    #split_date = "2021-09-06 00:00:00"
-
-        # Définir la proportion de l'ensemble de test
     test_size = 0.20  # Cela signifie 20% des données pour le test, et donc 80% pour l'entraînement.
 
     # Calculer le nombre d'observations total
@@ -343,6 +343,7 @@ def RF_XGB(model_name, df, split_date, target, features):
 
         result = {
             'Région': region,
+            'Modèle': model_name, #AJOUT
             'Moy y_test': mean_y_test,
             'Moy y_pred': mean_y_pred,
             'Bias': bias,
@@ -368,5 +369,72 @@ def RF_XGB(model_name, df, split_date, target, features):
 
     return results_df, mean_metrics
 
+def plot_feature_importance(combined_results_df, features):
+    """
+    Crée un barplot des importances des features pour différents modèles.
+    Args:
+        combined_results_df (pd.DataFrame): DataFrame combiné des résultats de plusieurs modèles,
+                                           incluant une colonne 'Modèle' et les importances des features.
+        features (list): Liste des noms des features dont on veut afficher l'importance.
+    Returns:
+        plotly.graph_objects.Figure: Figure Plotly du barplot.
+    """
+    # Filtrer les colonnes d'importance des features
+    importance_cols = [f'Importance {f}' for f in features]
+    
+    # Sélectionner les colonnes pertinentes pour le graphique
+    df_plot = combined_results_df[['Modèle', 'Région'] + importance_cols]
+    
+    # Faire un melt du DataFrame pour faciliter la visualisation avec Plotly
+    # Nous voulons une ligne par (Modèle, Région, Feature, Importance)
+    df_melted = df_plot.melt(id_vars=['Modèle', 'Région'], 
+                             value_vars=importance_cols, 
+                             var_name='Feature', 
+                             value_name='Importance')
+    
+    # Nettoyer les noms des features (enlever 'Importance ')
+    df_melted['Feature'] = df_melted['Feature'].str.replace('Importance ', '')
 
+    # Calculer l'importance moyenne par feature et par modèle pour l'affichage global
+    avg_importance_df = df_melted.groupby(['Modèle', 'Feature'])['Importance'].mean().reset_index()
+    
+    # Créer le barplot groupé
+    fig = px.bar(avg_importance_df, 
+                 x='Feature', 
+                 y='Importance', 
+                 color='Modèle', 
+                 barmode='group', # Pour grouper les barres par feature et par modèle
+                 title='Importance Moyenne des Features par Modèle',
+                 labels={'Feature': 'Feature', 'Importance': 'Importance Moyenne'},
+                 height=500)
+    
+    fig.update_layout(xaxis_title="Features", yaxis_title="Importance Moyenne")
+    fig.update_xaxes(categoryorder='total descending') # Ordonner les features par importance totale descendante
+    
+    return fig
+
+def display_modeling_results_and_plots():
+    if st.session_state['rf_metrics_per_region'] is not None:
+        st.subheader("Performances du modèle RandomForest par région :")
+        st.dataframe(st.session_state['rf_metrics_per_region'].set_index('Région').style.highlight_max(axis=0, subset=['R2 Score']).highlight_min(axis=0, subset=['Mean Absolute Error', 'MAPE (%)', 'Root Mean Squared Error', 'Bias']))
+
+        st.subheader("Moyennes des métriques d'évaluation RandomForest (Global) :")
+        st.dataframe(st.session_state['rf_global_mean_metrics'].to_frame(name='Moyenne').T)
+
+    if st.session_state['xgb_metrics_per_region'] is not None:
+        st.markdown("---") 
+        st.subheader("Performances du modèle XGBoost par région :")
+        st.dataframe(st.session_state['xgb_metrics_per_region'].set_index('Région').style.highlight_max(axis=0, subset=['R2 Score']).highlight_min(axis=0, subset=['Mean Absolute Error', 'MAPE (%)', 'Root Mean Squared Error', 'Bias']))
+
+        st.subheader("Moyennes des métriques d'évaluation XGBoost (Global) :")
+        st.dataframe(st.session_state['xgb_global_mean_metrics'].to_frame(name='Moyenne').T)
+    
+    # Affichage du graphique d'importance des features
+    if st.session_state['combined_results_df'] is not None and st.session_state['features_for_plot'] is not None:
+        st.write("---")
+        st.write("## 📈 Importance des Features par Modèle")
+        fig = plot_feature_importance(st.session_state['combined_results_df'], st.session_state['features_for_plot'])
+        st.plotly_chart(fig)
+    else:
+        st.info("💡 Les résultats de l'entraînement ou les données pour le graphique d'importance des features ne sont pas encore disponibles.")
 

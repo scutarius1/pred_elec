@@ -278,8 +278,8 @@ def main():
         st.title("Modélisation")
         modelisation.intro()
         modelisation.lancement()
+        modelisation.display_modeling_results_and_plots()
 
-        
 #################################
 # ⚙️     DIVERS PROCESSING        ⚙️#
 #################################
