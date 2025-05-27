@@ -5,19 +5,15 @@ import pandas as pd
 import seaborn as sns  
 import datetime
 import gdown
+import plotly.express as px
+from utils.assets_loader import load_image
+from PIL import Image
 
 #Import des bibliothèques ML
-from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing import MinMaxScaler
-
 from xgboost import XGBRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error, mean_absolute_percentage_error
-
-from sklearn.model_selection import TimeSeriesSplit
-from sklearn.model_selection import GridSearchCV
 from prophet import Prophet
-
 
 
 def intro():
@@ -73,9 +69,9 @@ def intro():
             """)
     
     st.write('#### Fine tunning - Hyperparamètres ')
-    st.write("Pour une approche plus méthodique dans la comparaison des 2 modèles basés sur des arbres de décisions et travailler avec les meilleurs paramètrages, " \
-    "nous avons utilisé **Grid Search**. Pour alléger le besoin de puissance de calcul demandés ci-après, nous laisserons laisserons les paramètres suivants."
-    "C'est un compromis entre une exigence de mémoire acceptable pour ce projet streamlit en ligne et des score élevés des métriques observées ")
+    st.write("Pour une approche méthodique dans la comparaison des 2 modèles basés sur des arbres de décisions et travailler avec les meilleurs paramètrages, " \
+    "nous avons utilisé **Grid Search**. Pour alléger le besoin de puissance de calcul demandés ci-après, nous laisserons laisserons les paramètres suivants : "
+    "Compromis entre une exigence de mémoire acceptable pour streamlit et des score élevés des métriques observées.")
     
     code = '''
             current_model = RandomForestRegressor(
@@ -87,7 +83,7 @@ def intro():
                 n_jobs=1 # Utile pour Streamlit pour la performance
 
             current_model = XGBRegressor(
-                n_estimators=100,    # Nombre d'estimateurs (arbres)
+                n_estimators=150,    # Nombre d'estimateurs (arbres)
                 max_depth=3,         # Profondeur maximale de l'arbre
                 learning_rate=0.05,  # Taux d'apprentissage. Réduit la contribution de chaque arbre pour rendre le modèle plus robuste.
                 random_state=42,
@@ -95,6 +91,15 @@ def intro():
             )
         '''
     st.code(code, language='python')
+        ###### image ######
+    img = load_image("learning_curve_xgboost.png")
+    if img:
+            st.image(img, caption="A titre d'exemple, la courbe d'apprentissage XGBoost, et le score RMSE en fonction du nombre d'itérations." \
+            "Et où l'on voit que n_estimator = 150 peut suffire", use_container_width=True)
+    else:
+            st.warning("❌ L’image est introuvable dans le dossier `pictures/`.")
+    ##################
+
 
 def lancement():
     # Bouton pour lancer le traitement des données et l'affichage
@@ -119,18 +124,18 @@ def lancement():
         st.write(f"**Variables explicatives (features) :**")
         st.write(st.session_state['features'])
 
+        combined_results_df = pd.concat([
+            st.session_state['rf_metrics_per_region'],
+            st.session_state['xgb_metrics_per_region']
+        ], ignore_index=True)
+
+        st.session_state['combined_results_df'] = combined_results_df
+        st.session_state['features_for_plot'] = st.session_state['features']
+    
     # ======================================================================
     # Nouveau bouton pour entraîner RF et XGBoost ensemble
     # ======================================================================
     # Vérifie si les données sont chargées avant d'afficher ce bouton
-#=====AJOUT FEATURES IMPORTANCE ==== 
-    # Initialiser l'état de session si ce n'est pas déjà fait
-    if 'combined_results_df' not in st.session_state:
-        st.session_state.combined_results_df = None
-    if 'features_list' not in st.session_state:
-        st.session_state.features_list = features # Stocker aussi les features
-#=====AJOUT FEATURES IMPORTANCE ==== 
-
     if st.session_state['df'] is not None: 
         if st.button("Lancer l'entraînement et l'évaluation des modèles (RF & XGBoost)"):
             # Récupérer les données de session_state pour les passer à la fonction RF_XGB
@@ -158,7 +163,7 @@ def lancement():
                 st.session_state['xgb_metrics_per_region'] = xgb_metrics_df_per_region
                 st.session_state['xgb_global_mean_metrics'] = xgb_global_mean_metrics
             st.success("Évaluation XGBoost terminée !")
-        
+
         # ======================================================================
         # Affichage séparé des résultats RF et XGBoost
         # Ces blocs s'exécutent si les résultats sont présents dans session_state
@@ -177,6 +182,7 @@ def lancement():
 
             st.subheader("Moyennes des métriques d'évaluation XGBoost (Global) :")
             st.dataframe(st.session_state['xgb_global_mean_metrics'].to_frame(name='Moyenne').T)
+
     else:
         st.info("Cliquez sur 'Charger et Traiter les Données' pour commencer à visualiser et modéliser. " \
         "L'entrainement des modèles est ensuite proposé.")
@@ -242,17 +248,12 @@ def load_process_dataset_modelisation():
     features = [col for col in all_columns if col != target and col not in exclude_columns]
 
     # Définir la proportion de l'ensemble de test
-    test_size = 0.20  # Cela signifie 20% des données pour le test, et donc 80% pour l'entraînement.
-
-    # Calculer le nombre d'observations total
+    test_size = 0.20  # Cela signifie 20% des données pour le test et 80% pour l'entraînement.
     total_observations = len(df)
-
     # Calculer le nombre d'observations dans l'ensemble d'entraînement (80%)
     train_observations = int(total_observations * (1 - test_size))
-
     # Calculer le nombre d'observations dans l'ensemble de test (20%)
     test_observations = total_observations - train_observations
-
     # Calculer la date de séparation en se basant sur la 80ème percentile des observations
     # Le .name récupère la valeur de l'index (qui est la date) de cette ligne
     split_date = df.iloc[train_observations - 1].name # Utilisez train_observations - 1 car iloc est 0-indexé
@@ -271,14 +272,7 @@ def load_process_dataset_modelisation():
 def RF_XGB(model_name, df, split_date, target, features):
     """
     Entraîne un modèle (RandomForest ou XGBoost) pour chaque région et évalue ses performances.
-    Args:
-        model_name (str): Nom du modèle à entraîner ("RandomForest" ou "XGBoost").
-        df (pd.DataFrame): DataFrame contenant les données prétraitées.
-        split_date (datetime): Date de séparation pour les ensembles d'entraînement/test.
-        target (str): Nom de la colonne cible.
-        features (list): Liste des noms des colonnes explicatives.
-    Returns:
-        tuple: DataFrame des métriques par région et Series des métriques moyennes globales.
+    Returns:        tuple: DataFrame des métriques par région et Series des métriques moyennes globales.
     """
     results = []
     regions = df['Région'].unique()
@@ -314,7 +308,7 @@ def RF_XGB(model_name, df, split_date, target, features):
             )
         elif model_name == "XGBoost":
             current_model = XGBRegressor(
-                n_estimators=100,    # Nombre d'estimateurs (arbres)
+                n_estimators=150,    # Nombre d'estimateurs (arbres)
                 max_depth=3,         # Profondeur maximale de l'arbre
                 learning_rate=0.05,  # Taux d'apprentissage. Réduit la contribution de chaque arbre pour rendre le modèle plus robuste.
                 random_state=42,
@@ -370,15 +364,7 @@ def RF_XGB(model_name, df, split_date, target, features):
     return results_df, mean_metrics
 
 def plot_feature_importance(combined_results_df, features):
-    """
-    Crée un barplot des importances des features pour différents modèles.
-    Args:
-        combined_results_df (pd.DataFrame): DataFrame combiné des résultats de plusieurs modèles,
-                                           incluant une colonne 'Modèle' et les importances des features.
-        features (list): Liste des noms des features dont on veut afficher l'importance.
-    Returns:
-        plotly.graph_objects.Figure: Figure Plotly du barplot.
-    """
+
     # Filtrer les colonnes d'importance des features
     importance_cols = [f'Importance {f}' for f in features]
     
@@ -404,7 +390,6 @@ def plot_feature_importance(combined_results_df, features):
                  y='Importance', 
                  color='Modèle', 
                  barmode='group', # Pour grouper les barres par feature et par modèle
-                 title='Importance Moyenne des Features par Modèle',
                  labels={'Feature': 'Feature', 'Importance': 'Importance Moyenne'},
                  height=500)
     
@@ -414,27 +399,15 @@ def plot_feature_importance(combined_results_df, features):
     return fig
 
 def display_modeling_results_and_plots():
-    if st.session_state['rf_metrics_per_region'] is not None:
-        st.subheader("Performances du modèle RandomForest par région :")
-        st.dataframe(st.session_state['rf_metrics_per_region'].set_index('Région').style.highlight_max(axis=0, subset=['R2 Score']).highlight_min(axis=0, subset=['Mean Absolute Error', 'MAPE (%)', 'Root Mean Squared Error', 'Bias']))
 
-        st.subheader("Moyennes des métriques d'évaluation RandomForest (Global) :")
-        st.dataframe(st.session_state['rf_global_mean_metrics'].to_frame(name='Moyenne').T)
-
-    if st.session_state['xgb_metrics_per_region'] is not None:
-        st.markdown("---") 
-        st.subheader("Performances du modèle XGBoost par région :")
-        st.dataframe(st.session_state['xgb_metrics_per_region'].set_index('Région').style.highlight_max(axis=0, subset=['R2 Score']).highlight_min(axis=0, subset=['Mean Absolute Error', 'MAPE (%)', 'Root Mean Squared Error', 'Bias']))
-
-        st.subheader("Moyennes des métriques d'évaluation XGBoost (Global) :")
-        st.dataframe(st.session_state['xgb_global_mean_metrics'].to_frame(name='Moyenne').T)
-    
-    # Affichage du graphique d'importance des features
-    if st.session_state['combined_results_df'] is not None and st.session_state['features_for_plot'] is not None:
-        st.write("---")
-        st.write("## 📈 Importance des Features par Modèle")
-        fig = plot_feature_importance(st.session_state['combined_results_df'], st.session_state['features_for_plot'])
-        st.plotly_chart(fig)
-    else:
-        st.info("💡 Les résultats de l'entraînement ou les données pour le graphique d'importance des features ne sont pas encore disponibles.")
-
+    st.write("---")
+    st.write("## 📈 Importance des Features pour les arbre de décisions")
+    if st.button("Afficher l'Importance des Features"):
+        if 'combined_results_df' in st.session_state and 'features_for_plot' in st.session_state:
+            if st.session_state['combined_results_df'] is not None and st.session_state['features_for_plot'] is not None:
+                fig = plot_feature_importance(st.session_state['combined_results_df'], st.session_state['features_for_plot'])
+                st.plotly_chart(fig)
+            else:
+                st.warning("⚠️ Les données nécessaires au calcul des importances ne sont pas disponibles. Veuillez entraîner les modèles d'abord.")
+        else:
+            st.info("💡 Cliquez d'abord sur 'Charger et Traiter les Données' puis 'Entraîner les Modèles' avant d'afficher l’importance des features.")
