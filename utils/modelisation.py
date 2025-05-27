@@ -124,13 +124,13 @@ def lancement():
         st.write(f"**Variables explicatives (features) :**")
         st.write(st.session_state['features'])
 
-        combined_results_df = pd.concat([
-            st.session_state['rf_metrics_per_region'],
-            st.session_state['xgb_metrics_per_region']
-        ], ignore_index=True)
+        #combined_results_df = pd.concat([
+           # st.session_state['rf_metrics_per_region'],
+           # st.session_state['xgb_metrics_per_region']
+        #], ignore_index=True)
 
-        st.session_state['combined_results_df'] = combined_results_df
-        st.session_state['features_for_plot'] = st.session_state['features']
+        #st.session_state['combined_results_df'] = combined_results_df
+        #st.session_state['features_for_plot'] = st.session_state['features']
     
     # ======================================================================
     # Nouveau bouton pour entraîner RF et XGBoost ensemble
@@ -183,6 +183,16 @@ def lancement():
             st.subheader("Moyennes des métriques d'évaluation XGBoost (Global) :")
             st.dataframe(st.session_state['xgb_global_mean_metrics'].to_frame(name='Moyenne').T)
 
+        if (
+            st.session_state['rf_metrics_per_region'] is not None
+            and st.session_state['xgb_metrics_per_region'] is not None
+        ):
+            combined_results_df = pd.concat([
+                st.session_state['rf_metrics_per_region'],
+                st.session_state['xgb_metrics_per_region']
+            ], ignore_index=True)
+            st.session_state['combined_results_df'] = combined_results_df
+            st.session_state['features_for_plot'] = st.session_state['features']
     else:
         st.info("Cliquez sur 'Charger et Traiter les Données' pour commencer à visualiser et modéliser. " \
         "L'entrainement des modèles est ensuite proposé.")
