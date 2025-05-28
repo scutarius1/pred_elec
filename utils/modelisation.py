@@ -69,9 +69,9 @@ def intro():
     st.write('#### Choix des modèles Machine Learning 🤖 ')    
     st.markdown("""
                 De façon plus limitée que le rapport d'étude, nous ne présenterons ici que :
-
-                - [**Prophet**](https://facebook.github.io/prophet/docs/quick_start.html) : pour challenger notamment la détection des saisonnalités et la robustesse à long terme.  
+ 
                 - [**Random Forest**](https://fr.wikipedia.org/wiki/For%C3%AAt_d%27arbres_d%C3%A9cisionnels), [**XGBoost**](https://en.wikipedia.org/wiki/XGBoost) : deux autres modèles, plus généralistes et simples à entraîner.
+                - [**Prophet**](https://facebook.github.io/prophet/docs/quick_start.html) : pour challenger notamment la détection des saisonnalités et la robustesse à long terme.  
 
                 Ces modèles sont connus pour bien gérer les séries temporelles.
                 """)
@@ -115,6 +115,7 @@ def intro():
             "Et où l'on voit que n_estimator = 100 peut suffire", use_container_width=True)
     else:
             st.warning("❌ L’image est introuvable dans le dossier `pictures/`.")
+        ###### image ######
     st.write("---")
     st.write('## Traitement du dataset ')
 
@@ -438,7 +439,56 @@ def display_modeling_results_and_plots():
                 st.warning("⚠️ Les données nécessaires au calcul des importances ne sont pas disponibles. Veuillez entraîner les modèles d'abord.")
         else:
             st.info("💡 Cliquez d'abord sur 'Charger et Traiter les Données' puis 'Entraîner les Modèles' avant d'afficher l’importance des features.")
-
+    st.markdown("---")
+    st.header(" 🤖 Focus Prophet")
+        
+    st.markdown(""" Il ressort de l'entrainement une capacité moindre à capter la variabilité de notre variable cible. Témoins les métriques légèrement inférieures à celles de RandomForest et XGBoost :
+                 """)
+    
+    # Crée un dictionnaire avec tes données
+    data = {
+        'Région': [
+            'Auvergne-Rhône-Alpes', 'Bretagne', 'Centre-Val de Loire', 'Grand Est',
+            'Hauts-de-France', 'Normandie', 'Occitanie', 'Pays de la Loire',
+            'Provence-Alpes-Côte d\'Azur', 'Île-de-France', 'Nouvelle-Aquitaine',
+            'Bourgogne-Franche-Comté'
+        ],
+        'MSE': [618347.408440, 71293.294483, 57860.196918, 273224.467675, 496277.620232, 107251.190415, 408808.501023, 316904.940208, 196585.834993, 780407.570747, 611839.872156, 48594.971564],
+        'RMSE': [786.350690, 267.008042, 240.541466, 522.708779, 704.469744, 327.492275, 639.381342, 562.943106, 443.380012, 883.406798, 782.201938, 220.442672],
+        'MAE': [628.756138, 207.169993, 192.209835, 426.653469, 571.402178, 237.517623, 512.350058, 424.050043, 334.635441, 708.092105, 602.397156, 173.843995],
+        'MAPE': [9.613186, 9.489713, 10.549336, 9.797167, 10.667154, 8.937283, 12.240458, 16.976135, 7.952227, 10.248624, 13.203451, 8.578102],
+        'Bias': [-397.169287, 53.035106, -106.187905, -279.899089, -517.764597, -87.048697, -386.316433, -5.547958, -135.732437, -550.626619, -449.839053, -64.854448],
+        'R^2': [0.638707, 0.702248, 0.720858, 0.610560, 0.409639, 0.669755, 0.466369, 0.391215, 0.629417, 0.765376, 0.507729, 0.781519]
+    }
+    df = pd.DataFrame(data)
+    df_rounded = df.round(2)
+    col1, col2 = st.columns([2, 1]) # La première colonne est deux fois plus large
+    with col1:
+        st.write("Voici les métriques de performance pour chaque région :")
+        st.dataframe(df_rounded, hide_index=True)
+    with col2:
+        st.write("Moyenne Globale :")
+        # Charge l'image
+        try:
+            img = load_image("KPI_prophet.png") # Assurez-vous que l'image est dans le même dossier ou spécifiez le chemin complet
+            st.image(img, caption="On notera un BIAS moyen négatif qui sous-entend une sous-estimation contrairement aux arbres de décision qui surestiment", use_container_width=True)
+        except FileNotFoundError:
+            st.warning("❌ L’image est introuvable. Veuillez vérifier le chemin d'accès.")
+    st.markdown("""La bonne captation par Prophet des saisonnalités est ici illustrée: tendance globale, hebdomadaire, annuelle ou journalière.)
+                """)
+    ###### image ######
+    img1 = load_image("saisonnalités1.png")
+    img2 = load_image("saisonnalité2.png")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.image(img1)
+    with col2:
+        st.image(img2)
+    ###### image ######
+    st.markdown("---")
+    st.markdown("""    
+                """)
+    st.markdown("---")
 
 def conclusion():
     ##################
@@ -448,6 +498,7 @@ def conclusion():
                 reflétant l’impact du climat sur la demande (chauffage/climatisation). La plage horaire est également clé, capturant les variations journalières typiques. 
                 Les variables calendaires jouent un rôle secondaire (XGBoost y est néanmoins plus sensible ). Tandis que la population ne variant pas à cette échelle de temps, a peu d’influence 
                 """)
+
     st.markdown(""" 
                 Comparatif des modèles :
 

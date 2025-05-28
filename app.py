@@ -2,13 +2,11 @@ import streamlit as st
 import streamlit.components.v1 as components
 import io
 import os
-import psutil
-#ajout OS + if not os.path.exists
+#import psutil
 import pandas as pd
 import matplotlib.pyplot as plt
 import gdown
 
-#import Explo_Viz , considération data cleaning & seeking
 
 from utils import Explo_Viz
 from utils import divers_processing
@@ -18,11 +16,13 @@ from utils import modelisation
 # ⚙️ LOAD & PREPROCESS ⚙️ #
 ##########################
 
+# ====== Module Conso RAM ====== 
 #def afficher_ram_utilisee():
     #process = psutil.Process(os.getpid())
     #mem_info = process.memory_info()
     #ram_mo = mem_info.rss / (1024 ** 2)  # rss = Resident Set Size
     #st.sidebar.metric("RAM utilisée", f"{ram_mo:.2f} Mo")
+# ====== Module Conso RAM ====== 
 
 def scroll_to_top():
     """
@@ -60,7 +60,7 @@ def load_and_preprocess_data():
 
 def main():
     st.sidebar.title("⚡⚡ Prédiction Conso Electrique en France ⚡⚡")
-    pages = ["📖 Contexte et Datasets", "📊 Production VS Consommation", "📉 Variabilité de la consommation", "✂️ Prétraitements des données"," 🤖 Modélisation"]
+    pages = ["📖 Contexte et Datasets", "📊 Production VS Consommation", "📉 Variabilité de la consommation", "✂️ Prétraitements des données"," 🤖 Modélisation et Bilan"]
 
 #NOUVEAU======
     # Capture l'état actuel de la page avant le changement
@@ -167,7 +167,7 @@ def main():
 ####################################
 
     elif page == pages[1]:
-        st.info("L'ensemble des data visualisations présentées ici sont réalisées à partir de notre jeu de donnée principal dit 'Eco2mix'")
+        st.info("L'ensemble des data visualisations présentées ici sont réalisées uniquement à partir du jeu de données principal dit 'Eco2mix'")
         st.header(" 🔺🔻 Inégalités Régionales : Mix Energétique et Capacités de Production 🏭 "
         )
 
@@ -181,6 +181,7 @@ def main():
         plt.close(fig2)
         st.write("");st.write("") 
         st.write("---")
+
 #Affichage des besoins /régions dans le temps    
 
         st.header("Phasages et Echanges Inter-régionaux : Visualisation interactive 🤓 "
@@ -194,7 +195,7 @@ def main():
                     - Le phasage entre Consommation (Ligne en pointillé noir) et Production au moyen des **échanges inter-régionaux** d'autre part. 
         """)
 
-## ⚙️ OUTIL DE FILTRAGE ####
+## ⚙️ OUTIL DE FILTRAGE - debut ####
         st.markdown('<div class="filtre-vert">', unsafe_allow_html=True)
         st.markdown("<hr style='border: 4px solid #4CAF50;'>", unsafe_allow_html=True)
         st.markdown('<h6 style="text-align: center; color: #4CAF50;">🔎 Filtres d\'Analyse</h6>', unsafe_allow_html=True)
@@ -214,19 +215,21 @@ def main():
         with col3:
             frequence_resample = st.radio("**Fréquence** (échantillonnage)", options=['Heure', 'Jour', 'Semaine', 'Mois'],index=1  # 'Jour' par défaut
             )
-#'Bretagne', 'Centre-Val de Loire', 
         regions_preselectionnees = ['Auvergne-Rhône-Alpes', "Provence-Alpes-Côte d'Azur"]
         regions = sorted(df_cons_preprocessed['Région'].unique())
 
         regions_selected = st.multiselect("Régions à comparer (2 maximum)", options=regions,default=regions_preselectionnees
         )
         st.markdown("<hr style='border: 4px solid #4CAF50;'>", unsafe_allow_html=True)
+## ⚙️ OUTIL DE FILTRAGE - fin ####
 
-## ⚙️ GRAPHIQUE INTERACTIF  ####       
+## AFFICHAGE GRAPHIQUE INTERACTIF  ####       
         fig = Explo_Viz.create_regional_plots(df_cons_preprocessed, annee, mois, None, frequence_resample, regions_selected)
         st.pyplot(fig)
         plt.close(fig)
         st.write("Attardons nous maintenant sur les relations entre différentes variables (variables explicatives et la variable cible - Consommation. Voir 'Variabilité de la consommation'" )
+
+
 #################################
 # ⚙️ DATAVIZ CORRELATIONS  ⚙️#
 #################################
