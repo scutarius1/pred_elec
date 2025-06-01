@@ -7,6 +7,7 @@ import streamlit as st
 import gdown
 from scipy.stats import pearsonr
 from scipy.stats import spearmanr
+from scipy.stats import f_oneway
 
 # ###############################
 # ⚙️ PREPROCESSING 1       ⚙️ #
@@ -320,23 +321,45 @@ def create_annual_plot(df_st2):
 # ⚙️     TEST STATISTIQUES    ⚙️#
 #################################
 
+#@st.cache_data
+#def Test_corr(df_st3):
+#    """
+#    Calcule les corrélations de Spearman et Pearson entre la PLAGE HORAIRE et CONSO.
+#    """
+#    # Calcul des corrélations globales sur le jeu de données agrégé
+#    spearman_corr, spearman_p = spearmanr(df_st3['Plage Horaire'], df_st3['Consommation (MW)'])
+#    pearson_corr, pearson_p = pearsonr(df_st3['Plage Horaire'], df_st3['Consommation (MW)'])
+#
+    # Retourner figure + corrélations dans un dict pour affichage en aval
+#    corr_results = {
+#        "spearman_corr": spearman_corr,
+#        "spearman_p": spearman_p,
+#        "pearson_corr": pearson_corr,
+#        "pearson_p": pearson_p
+#    }
+#    return corr_results, df_st3
+
 @st.cache_data
 def Test_corr(df_st3):
     """
-    Calcule les corrélations de Spearman et Pearson entre la PLAGE HORAIRE et CONSO.
+    Effectue un test ANOVA à un facteur pour évaluer si la Consommation moyenne
+    diffère significativement selon la Plage Horaire.
     """
-    # Calcul des corrélations globales sur le jeu de données agrégé
-    spearman_corr, spearman_p = spearmanr(df_st3['Plage Horaire'], df_st3['Consommation (MW)'])
-    pearson_corr, pearson_p = pearsonr(df_st3['Plage Horaire'], df_st3['Consommation (MW)'])
+    # Préparation des données pour l'ANOVA
+    # Groupement des données de consommation par 'Plage Horaire'
+    # et conversion des groupes en listes pour f_oneway.
+    # Aucune vérification de validité ou de taille de groupe n'est effectuée ici.
+    data_for_anova = [group_data.tolist() for name, group_data in df_st3.groupby('Plage Horaire')['Consommation (MW)']]
 
-    # Retourner figure + corrélations dans un dict pour affichage en aval
-    corr_results = {
-        "spearman_corr": spearman_corr,
-        "spearman_p": spearman_p,
-        "pearson_corr": pearson_corr,
-        "pearson_p": pearson_p
+    # Exécution du test ANOVA à un facteur
+    f_statistic, p_value = f_oneway(*data_for_anova)
+
+    # Retourner les résultats de l'ANOVA
+    anova_results = {
+        "f_statistic": f_statistic,
+        "p_value": p_value
     }
-    return corr_results, df_st3
+    return anova_results, df_st3
 
 @st.cache_data
 def Test_corr_temp(df_corr01):

@@ -60,7 +60,7 @@ def load_and_preprocess_data():
 
 def main():
     st.sidebar.title("⚡⚡ Prédiction Conso Electrique en France ⚡⚡")
-    pages = ["📖 Contexte et Datasets", "📊 Production VS Consommation", "📉 Variabilité de la consommation", "✂️ Prétraitements des données"," 🤖 Modélisation et Bilan"]
+    pages = ["📖 Contexte Projet et Datasets", "📊 Production VS Consommation", "📉 Variabilité de la consommation", "✂️ Prétraitements des données"," 🤖 Modélisation et Bilan"]
 
 #NOUVEAU======
     # Capture l'état actuel de la page avant le changement
@@ -99,7 +99,7 @@ def main():
     if page == pages[0]: 
         st.title("⚡ ⚡ Prédiction de Consommation Electrique en France ⚡ ⚡ ")
         st.write("")
-        st.header("⚖️ Contexte")
+        st.header("Contexte")
         st.markdown(""" L’adéquation entre la production et la consommation d’électricité est au cœur des préoccupations d’un acteur de l’énergie comme EDF. 
                  Ce dernier, en tant que producteur et commercialisateur d’électricité est en effet un responsable d’équilibre vis-à-vis de RTE. 
                  Cela signifie qu’il se doit d’assurer à tout instant un équilibre entre sa production et la consommation de ses clients, sous peine de pénalités. 
@@ -109,22 +109,50 @@ def main():
             'Analyse pour en déduire une prévision de consommation (risque de black out notamment)')
 
         st.write("## 📚 Les jeux de données mis en oeuvre ")
+
         data = [
-        {"Objet": "Energie (Consolidé)", "Description": "Production et consommation d’énergie par type de moyen de production et régions ( 30 min)", "Période couverte": "2013-2022", "Volumétrie (lignes x colonnes)": "2.121.408 x 32", "Source": "ODRE, Open Data EDF"},
-        {"Objet": "Energie (Temps Réel)", "Description": "Production et consommation d’énergie par type de moyen de production et région (15 min, non consolidé)", "Période couverte": "2023-2024", "Volumétrie (lignes x colonnes)": "796.000 x 32", "Source": "ODRE"},
-        {"Objet": "Population", "Description": "Évolutions et prévisions de la population française par région", "Période couverte": "1990-2070", "Volumétrie (lignes x colonnes)": "264.951 x 7", "Source": "INSEE"},
-        {"Objet": "Température", "Description": "Évolution des températures quotidiennes par région", "Période couverte": "2016-2024", "Volumétrie (lignes x colonnes)": "41.756 x 7", "Source": "Météo France"},
-        {"Objet": "Température", "Description": "Simulations 'DRIAS-2020' : données corrigées quotidiennes. Grille Safran", "Période couverte": "2006-2100", "Volumétrie (lignes x colonnes)": "83.987.046 x 8", "Source": "DRIAS"},
+            {"Objet": "Energie (Consolidé)", "Fournisseur": "ODRE, Open Data RTE",
+            "Description": "Production et consommation d’énergie par type de moyen de production et régions (30 min)",
+            "Période couverte": "2013-2022", "Volumétrie": "2.121.408 x 32", "Source": "https://odre.opendatasoft.com/explore/dataset/eco2mix-regional-cons-def/information/?disjunctive.libelle_region&disjunctive.nature&sort=-date_heure&dataChart=eyJxdWVyaWVzIjpbeyJjaGFydHMiOlt7InR5cGUiOiJsaW5lIiwiZnVuYyI6IlNVTSIsInlBeGlzIjoiY29uc29tbWF0aW9uIiwiY29sb3IiOiJyYW5nZS1jdXN0b20iLCJzY2llbnRpZmljRGlzcGxheSI6dHJ1ZX1dLCJ4QXhpcyI6ImRhdGVfaGV1cmUiLCJtYXhwb2ludHMiOjIwMCwidGltZXNjYWxlIjoibWludXRlIiwic29ydCI6IiIsImNvbmZpZyI6eyJkYXRhc2V0IjoiZWNvMm1peC1yZWdpb25hbC1jb25zLWRlZiIsIm9wdGlvbnMiOnsiZGlzanVuY3RpdmUubGliZWxsZV9yZWdpb24iOnRydWUsImRpc2p1bmN0aXZlLm5hdHVyZSI6dHJ1ZSwic29ydCI6Ii1kYXRlX2hldXJlIn19LCJzZXJpZXNCcmVha2Rvd24iOiJsaWJlbGxlX3JlZ2lvbiJ9XSwidGltZXNjYWxlIjoiIiwiZGlzcGxheUxlZ2VuZCI6dHJ1ZSwiYWxpZ25Nb250aCI6dHJ1ZX0%3D"},
+            
+            {"Objet": "Energie (Temps Réel)", "Fournisseur": "ODRE, Open Data RTE",
+            "Description": "Production et consommation d’énergie par type de moyen de production et région (15 min, non consolidé)",
+            "Période couverte": "2023-2024", "Volumétrie": "796.000 x 32", "Source": "https://odre.opendatasoft.com/explore/dataset/eco2mix-regional-tr/information/?disjunctive.nature&disjunctive.libelle_region"},
+            
+            {"Objet": "Population", "Fournisseur": "INSEE",
+            "Description": "Évolutions et prévisions de la population française par région",
+            "Période couverte": "1990-2070", "Volumétrie": "264.951 x 7", "Source": ""},
+            
+            {"Objet": "Température", "Fournisseur": "Weathernews France",
+            "Description": "Évolution des températures quotidiennes par région",
+            "Période couverte": "2016-2024", "Volumétrie": "41.756 x 7",
+            "Source": "https://odre.opendatasoft.com/explore/dataset/temperature-quotidienne-regionale/information/?disjunctive.region&sort=date"},
+            
+            {"Objet": "Température", "Fournisseur": "DRIAS - Météo France",
+            "Description": "Simulations 'DRIAS-2020' : données corrigées quotidiennes. Grille Safran",
+            "Période couverte": "2006-2100", "Volumétrie": "83.987.046 x 8", "Source": "https://www.drias-climat.fr/"},
         ]
 
+        df = pd.DataFrame(data)
+
+        df["Source"] = df["Source"].apply(
+            lambda url: f'<a href="{url}" target="_blank">LIEN</a>' if url else ""
+        )
+
         st.markdown("""
-                    <style>
-                    .stTable td:nth-child(2),.stTable td:nth-child(4) {
-                    white-space: nowrap;
-                    }
-                    </style>
-                    """, unsafe_allow_html=True)
-        st.table(data)
+            <style>
+            /* Fixe la largeur étroite pour la colonne Source (6ème colonne) */
+            td:nth-child(6), th:nth-child(6) {
+                width: 80px;
+                max-width: 80px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            </style>
+        """, unsafe_allow_html=True)
+
+        st.markdown(df.to_html(escape=False, index=False), unsafe_allow_html=True)
 
         st.markdown(""" Les échanges avec le data scientist EDF ont confirmé notre intuition d’expliquer la variable cible **Consommation** 
                     par les variables explicatives **Température**, **Dates** et **Population**.
@@ -168,7 +196,7 @@ def main():
 
     elif page == pages[1]:
         st.info("L'ensemble des data visualisations présentées ici sont réalisées uniquement à partir du jeu de données principal dit 'Eco2mix'")
-        st.header(" 🔺🔻 Inégalités Régionales : Mix Energétique et Capacités de Production 🏭 "
+        st.header(" ⚖️ Inégalités Régionales : Mix Energétique et Capacités de Production 🏭 "
         )
 
         st.write ("""En plus de ne pas avoir le même mix energétique (installations Eoliennes, Hyrdoliques, Nucléaires...), les régions sont pas toutes en capacité de couvrir leurs besoins quand certaines, à l'inverse, sont excédentaires: """)
@@ -184,7 +212,7 @@ def main():
 
 #Affichage des besoins /régions dans le temps    
 
-        st.header("Phasages et Echanges Inter-régionaux : Visualisation interactive 🤓 "
+        st.header("Phasages et Echanges Inter-régionaux : Visualisation interactive 🔺🔻 "
         )
         st.write("");st.write("") 
 
@@ -247,7 +275,7 @@ def main():
         plt.close(fig_boxplot)
         st.write("")
 
-        st.write("### Température et Consommation")
+        st.write("### a) Température et Consommation")
         st.write("""Le graphique ci-après combine des 'boxplots' de **consommation électrique (MW)** et un 'scatter plot' de **température moyenne (°C)**,
                  le tout groupé par mois sur l’entièreté de la période étudiée. Il permet d'émettre l'hypothèse d'une influence significative de la température sur la consommation électrique au niveau mensuel, 
                  tout en visualisant la distribution et la variabilité de ces deux variables clés au fil de l'année :"""
@@ -259,37 +287,38 @@ def main():
 
         st.write(" - **Saisonnalité de la Consommation** : Les boxplots de consommation révèlent une forte saisonnalité. " \
         "La consommation est généralement plus élevée en hiver, avec des médianes et des étendues interquartiles significativement plus hautes.")
-        st.write("")
         st.write(" - **Corrélation Inverse Apparente** : En juxtaposant les deux types de données, on peut observer une corrélation inverse suggestive " \
         "entre la température moyenne et la consommation électrique.")
 
         #CORRELATION TEMPERATURE ET CONSO
-        st.write("""Pour vérifier cette hypothèse de correlation, ci-après le résultat d'un test statistique  """
+        st.write("""Pour vérifier cette hypothèse de correlation, réalisons un test statistique 🧮 """
         )
-        st.write(" Les hypothèses :")
-        st.write(" H0 : Il n'y a pas d'influence de la température sur la consommation")
-        st.write("H1 : Il y a une influence significative de la température sur la consommation")
         #####UPDATE####
         corr_results_temp, df_corr01 = Explo_Viz.Test_corr_temp(df_corr01)
 
-        st.write("#### Résultats des tests de corrélation entre Température moyenne et Consommation")
-        st.write("**Les hypothèses :**")
-        st.write("- H0 : Il n'y a pas de lien entre la température moyenne et la consommation")
-        st.write("- H1 : Il existe une relation significative entre température et consommation")
-
-        st.write(f"- Corrélation de Spearman : {corr_results_temp['spearman_corr']:.3f} (p-value = {corr_results_temp['spearman_p']:.3e})")
-        st.write(f"- Corrélation de Pearson : {corr_results_temp['pearson_corr']:.3f} (p-value = {corr_results_temp['pearson_p']:.3e})")
-
-        if corr_results_temp['spearman_p'] < 0.05 or corr_results_temp['pearson_p'] < 0.05:
-            st.write("➡️ Le lien entre **température** et **consommation** est **significatif**, car la p-valeur est inférieure à 0.05.")
-        else:
-            st.write("❗ Aucune corrélation significative détectée entre température et consommation (p-valeur > 0.05).")
-
-        st.write("💡 Note : La température peut influencer la consommation énergétique (chauffage ou climatisation), mais cette relation peut varier selon les régions, saisons, ou plages horaires.")
+        st.markdown("""#### <u>Test statistique : *Température moyenne et Consommation*</u>""",unsafe_allow_html=True)
+        st.markdown("""Les corrélations Pearson et Spearman évaluent le lien entre deux variables continues ou ordonnées
+                    c'est le cas de nos 2 variables.""")
+        st.write("*Les hypothèses :*")
+        st.markdown("""
+                    - H0 : Il n'y a pas de lien entre la température moyenne et la consommation
+                    - H1 : Il existe une relation significative entre température et consommation
+                    """)
+        # Création du DataFrame pour le tableau
+        data = {
+            "Test de Corrélation": ["Pearson (linéaire)", "Spearman (monotone)"],
+            "Coefficient": [f"{corr_results_temp['pearson_corr']:.3f}", f"{corr_results_temp['spearman_corr']:.3f}"],
+            "p-value": [f"{corr_results_temp['pearson_p']:.3e}", f"{corr_results_temp['spearman_p']:.3e}"]
+        }
+        df_results = pd.DataFrame(data)
+        st.dataframe(df_results, use_container_width=True) # Affiche le tableau
+        #########
+        st.success(" Interprétation : ✅ On en conlue H1. Le lien entre **température** et **consommation** est **significatif**, car la p-valeur est inférieure à 0.05.")
+        st.info("💡 Note : La température peut influencer la consommation énergétique (chauffage ou climatisation), mais cette relation peut varier selon les régions, saisons, ou plages horaires.")
         #####UPDATE####
 
         #CORRELATION PLAGE HORAIRE ET CONSO
-        st.write("### Plage Horaire et Consommation")
+        st.write("### b) Plage Horaire et Consommation")
         st.write("")
         st.write(""" La variabilité horaire est particulièrement marquée en hiver, tandis qu’elle reste plus stable en été, comme l’indiquent les amplitudes des boxplots.
                  La forte structuration des courbes selon l’heure suggère une corrélation claire entre consommation électrique et rythme quotidien d’activité."""
@@ -299,18 +328,43 @@ def main():
         st.pyplot(fig_boxplot)  # Affichage du graphique dans Streamlit
         plt.close(fig_boxplot)  # Fermeture pour éviter les conflits de rendu
 
-        corr_results, df_st3 = Explo_Viz.Test_corr(df_st3)
+        anova_results, df_st3 = Explo_Viz.Test_corr(df_st3)
 
-        st.write("#### Résultats des tests de corrélation entre Plage Horaire et Consommation")
-        st.write(" Les hypothèses :")
-        st.write(" H0 : Il n'y a pas d'influence de la plage horaire sur la consommation")
-        st.write("H1 : Il y a une influence significative de la plage horaire sur la consommation")
+        st.markdown("""#### <u>Test statistique : *Plage Horaire et Consommation*</u>""",unsafe_allow_html=True)
+        st.markdown("""Consommation (MW) : C'est une variable quantitative (continue). Plage horaire : C'est une variable catégorielle (ou ordinale). 
+                    Même si les heures sont numériques, elles représentent ici des catégories distinctes. On ne cherche pas une tendance linéaire continue avec le numéro de l'heure, 
+                    mais si la consommation moyenne est différente à 1h par rapport à 2h, 3h, etc. Le Test ANOVA est ici adapté""")
+
+        st.write(" *Les hypothèses* :")
+        st.markdown("""
+            - H0 : Il n'y a pas d'influence de la plage horaire sur la consommation
+            - H1 : Il y a une influence significative de la plage horaire sur la consommation
+            """)
         
-        st.write(f"- Corrélation de Spearman : {corr_results['spearman_corr']:.3f} (p-value = {corr_results['spearman_p']:.3e})")
-        st.write(f"- Corrélation de Pearson : {corr_results['pearson_corr']:.3f} (p-value = {corr_results['pearson_p']:.3e})")
-        st.write("le facteur “Plage_Horaire” a un effet significatif sur la consommation,\n car la p-valeur est inférieure à 0.05")
-        st.write(""" Mais ces tests ne captent pas nécessairement toute la structure réelle du phénomène (comme la nature cyclique des heures)."""
-                 )
+        #st.write(f"- Corrélation de Spearman : {corr_results['spearman_corr']:.3f} (p-value = {corr_results['spearman_p']:.3e})")
+        #st.write(f"- Corrélation de Pearson : {corr_results['pearson_corr']:.3f} (p-value = {corr_results['pearson_p']:.3e})")
+        #st.write("le facteur “Plage_Horaire” a un effet significatif sur la consommation,\n car la p-valeur est inférieure à 0.05")
+        #st.write(""" Mais ces tests ne captent pas nécessairement toute la structure réelle du phénomène (comme la nature cyclique des heures)."""
+        #         )
+
+        #######################
+    # Création du DataFrame pour le tableau des résultats ANOVA
+        data = {
+            "Test Statistique": ["ANOVA à un facteur"],
+            "Statistique F": [f"{anova_results['f_statistic']:.3f}"],
+            "p-value": [f"{anova_results['p_value']:.3e}"]
+        }
+        df_results = pd.DataFrame(data)
+        df_results = df_results.set_index("Test Statistique") # Optionnel: définir l'index pour une meilleure présentation
+
+        st.dataframe(df_results, use_container_width=True) # Affiche le tableau
+
+        st.success("Interprétation : ✅ **Le lien entre la Plage Horaire et la Consommation est statistiquement significatif**, car la p-valeur est inférieure au seuil de 0.05.")
+        st.info(" Cela signifie que la consommation moyenne d'électricité varie significativement selon l'heure de la journée. " \
+        "Pour identifier quelles plages horaires diffèrent spécifiquement, des tests post-hoc (par exemple, Tukey's HSD) seraient nécessaires.")
+
+        #######################
+
 
 #################################
 # ⚙️     MODELISATIONS        ⚙️#
