@@ -85,7 +85,7 @@ def intro():
                 De même, la normalisation des données n’a pas d’impact significatif sur la performance des modèles. Nous faisons le choix de laisser les variables sans normalisation et sans transformation variables cycliques.
             """)
     st.write("---")
-    st.write('#### Fine tunning - Hyperparamètres ')
+    st.write('#### Hyperparamètres ?')
     st.write("Pour une approche méthodique dans la comparaison des 2 modèles basés sur des arbres de décisions et travailler avec les meilleurs paramètrages, " \
     "nous avons utilisé **Grid Search**. Pour alléger le besoin de puissance de calcul demandés ci-après, nous laisserons laisserons les paramètres suivants : "
     "Compromis entre une exigence de mémoire acceptable pour streamlit et des score élevés des métriques observées.")
@@ -141,14 +141,6 @@ def lancement():
         st.write(f"**Variable cible (target) :** `{st.session_state['target']}`")
         st.write(f"**Variables explicatives (features) :**")
         st.write(st.session_state['features'])
-
-        #combined_results_df = pd.concat([
-           # st.session_state['rf_metrics_per_region'],
-           # st.session_state['xgb_metrics_per_region']
-        #], ignore_index=True)
-
-        #st.session_state['combined_results_df'] = combined_results_df
-        #st.session_state['features_for_plot'] = st.session_state['features']
     
     # ======================================================================
     # Nouveau bouton pour entraîner RF et XGBoost ensemble
@@ -493,22 +485,49 @@ def display_modeling_results_and_plots():
 def conclusion():
     ##################
     #INTERPRETATION FEATURES
-    st.write("## ✅ Bilan ")
-    st.markdown(""" Les modèles RandomForest et XGBoost s’accordent sur l’importance déterminante de la température moyenne et maximale pour prédire la consommation électrique, 
-                reflétant l’impact du climat sur la demande (chauffage/climatisation). La plage horaire est également clé, capturant les variations journalières typiques. 
+    st.write("## 🏆 Bilan Modélisation ")
+    st.markdown(""" Les modèles RandomForest et XGBoost s’accordent sur l’importance déterminante de la **température** moyenne et maximale pour prédire la consommation électrique, 
+                reflétant l’impact du climat sur la demande (chauffage/climatisation). La **plage horaire** est également clé, capturant les variations journalières typiques. 
                 Les variables calendaires jouent un rôle secondaire (XGBoost y est néanmoins plus sensible ). Tandis que la population ne variant pas à cette échelle de temps, a peu d’influence 
                 """)
 
     st.markdown(""" 
-                Comparatif des modèles :
+                <u>Comparatif des modèles :</u>
 
-                **XGBoost** surpasse Random Forest avec un R² supérieur de 0,07, indiquant qu’il explique significativement mieux la variabilité de la consommation électrique.
-                Soit une meilleure capacité de XGBoost à capturer les variations fines et les non-linéarités. Ses erreurs (RMSE, MAE, MAPE) sont également plus faibles, traduisant des prédictions plus précises et un biais réduit (<u>moins de surestimation</u>.
-                A noter : 
-                - la différence de MAPE correspond à une amélioration d’environ 10% de la précision relative au profit de XG Boost
-                - XG Boost porte bien son nom en ce qu'il est également plus rapide à entrainer (sur ce jeu de données).
-
-                Cependant, Random Forest reste un modèle robuste, plus simple à paramétrer et interpréter, pouvant être préféré selon les contraintes opérationnelles. 
-                Le choix dépendra donc du compromis entre performance fine et simplicité d’usage.
-
+                A la granularité *horaire* (ici testé) mais aussi *journalière* (testé par ailleurs) **XGBoost** surpasse Random Forest avec un R² supérieur de 0,07, indiquant qu’il explique significativement mieux la variabilité de la consommation électrique.
+                Soit une meilleure capacité à capturer les variations fines et les non-linéarités. Ses erreurs (RMSE, MAE, MAPE) sont également plus
                 """,unsafe_allow_html=True)
+    st.markdown("""
+                > **À noter :**
+                > * La **différence de MAPE** correspond à une amélioration d’environ **10%** de la précision relative au profit de XGBoost.
+                > * **XGBoost** porte bien son nom en ce qu'il est également **plus rapide à entraîner** (sur ce jeu de données).
+                """,unsafe_allow_html=True)
+            
+    st.markdown("""
+                Cependant, Random Forest reste un modèle robuste, plus simple à paramétrer et interpréter, pouvant être préféré selon les contraintes opérationnelles. 
+                Le choix dépendra donc du compromis entre performance fine et simplicité d’usage. 
+                Notre *Simulateur* (voir page dédiée), inlue la mobilisation des 2 modèles pour la démonstration de capacité de prédiction des valeurs futures.
+                """,unsafe_allow_html=True)
+    
+    st.write("## ✅ Conclusion et pistes d'améliorations ")    
+    st.success(""" 
+               ### Affiner le modèle de prévision de consommation électrique :
+
+               0. Optimisation du **pré-traitement** : idéalement récupérer et utiliser les scripts de traitement des données de l'ODRE pour gagner du temps sur le datacleaning/consolidation.
+               
+               1. **Enrichir les données d'entrées** : faute de temps, il n'a pas été possible d'enrichir le dataset. Pour autant, précipitations, ensoleillement, jour de congés, poids régionale des industries consommatrices, auraient pu nous fournir des enseignements complémentaires.
+               
+               2. Exploration de **modèles plus avancés** : 
+
+                    - Ayant par exemple en tête le Bias négatif côté **Prophet**, on pourrait également imaginer créer un modèle d’assemblage (**stacking**) combinant les avantage de XGBoost à la robustesse et détection de saisonnalités de Prophet.
+                            
+                    -  Une piste fortement recommandée est l'exploration des modèles de Deep Learning : avantages significatifs tels que la capacité à gérer de grandes quantités de données. 
+               L'apprentissage de caractéristiques complexes et non linéaires. Une meilleure adaptabilité aux changements et aux tendances. L'efficacité pour les prédictions à long terme. L'automatisation du "feature engineering".
+            
+               
+
+               ### Finalité Opérationnelle : Rôle du simulateur :
+
+               1. proposer des fenêtres de maintenance pour les moyens de production, en se basant sur des prévisions de consommation plus fiables et plus précises.
+               2. intégrer les scénarios de températures futures (pessimistes et optimistes) et les faire valider par des référents au GIEC, le
+               """)

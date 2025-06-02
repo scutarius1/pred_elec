@@ -67,13 +67,14 @@ def load_model_for_region(model_choice, region):
 # --- DÉBUT DE L'APPLICATION STREAMLIT ---
 
 st.title("Simulateur de Consommation Future")
-st.markdown(""" 
+st.info(""" 
             Nous récupérons le fichier des températures futures à la FREQUENCE JOUR (voir "Pré-traitement des données") ; 
             effectuons un rapide processing pour l'aligner sur la mise en forme utilisée lors de l'entrainement 
             et la génération de nos **modèles régionaux de Régression** (RF_NomRegion.joblib, XGB_NomRegion.joblib, etc)
+        """)
             
-            C'est à vous de jouer pour simuler une consommation future régionale 🚀 !
-            """)
+st.write("C'est à vous de jouer pour simuler une consommation future régionale 🚀 !" \
+"       ")
     
 st.markdown("<hr style='border: 2px solid #4CAF50;'>", unsafe_allow_html=True)
 st.markdown('<h5 style="text-align: center; color: #4CAF50;">🔎 Votre besoin de prévision</h5>', unsafe_allow_html=True)

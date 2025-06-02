@@ -371,7 +371,7 @@ def main():
 #################################
 
     elif page == pages[4]:
-        st.title("Modélisation")
+        st.title("🤖 Modélisation")
         modelisation.intro()
         modelisation.lancement()
         modelisation.display_modeling_results_and_plots()
