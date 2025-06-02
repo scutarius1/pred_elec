@@ -106,7 +106,7 @@ def main():
                  Pour se faire, construire un modèle de prévision de la consommation de ses clients est une activité essentielle au bon fonctionnement de EDF.""") 
         
         st.write(' 🎯 **Objectif** : Constater le phasage entre la consommation et la production énergétique au niveau national et au niveau régional. ' \
-            'Analyse pour en déduire une prévision de consommation (risque de black out notamment)')
+            'Analyse pour en déduire une prévision de consommation (et éviter notamment le risque de black out)')
 
         st.write("## 📚 Les jeux de données mis en oeuvre ")
 

@@ -44,15 +44,15 @@ def intro():
                     - Features: ['TMoy (°C)', 'TMin (°C)', 'TMax (°C)', 'POP (en milliers)', 'year', 'month', 'day_of_week', 'day_of_year', 'week_of_year', 'PlageHoraire']
                     
                     - Target : notre variable cible la Consommation (MW). 
-                    
+
                     - Les Prévisions étant faites par Régions, ces dernières seront quand à elles, uniquement nos point d'entrée pour chaque entrainement de modèle.
                 """,unsafe_allow_html=True)
-    st.write("Echantillon **.sample(10)** : ")
+    #st.write("Echantillon **.sample(10)** : ")
     # --- MODIFICATION ICI ---
-    if st.session_state['df'] is not None:
-        st.dataframe(st.session_state['df'].sample(5))  # Accéder à df via session_state
-    else:
-        st.info("Veuillez charger les données en cliquant sur le bouton 'Charger et Traiter les Données' dans la section 'Lancement' pour voir un échantillon.")
+    #if st.session_state['df'] is not None:
+    #    st.dataframe(st.session_state['df'].sample(5))  # Accéder à df via session_state
+    #else:
+    #    st.info("Veuillez charger les données en cliquant sur le bouton 'Charger et Traiter les Données' dans la section 'Lancement' pour voir un échantillon.")
     # --- FIN MODIFICATION ---
 
     st.markdown(""" Pour simplifier cette restitution, nous allons entraîner puis comparer nos modèles uniquement sur la **maille horaire**. 
@@ -81,6 +81,7 @@ def intro():
 
                 Ces modèles sont connus pour bien gérer les séries temporelles.
                 """)
+    st.write("---")
     st.write('#### Series temporelles (hold-out)⏲️, encodage, standardisation ? ”')
     st.markdown("""
                 Objectif = Éviter la fuite de données. Si les données ne sont pas triées par date et que le train_test_split est aléatoire, 
@@ -123,7 +124,7 @@ def intro():
             st.warning("❌ L’image est introuvable dans le dossier `pictures/`.")
         ###### image ######
     st.write("---")
-    st.write('## Traitement du dataset ')
+    st.write('## Entrainement des Modèles ')
 
 def lancement():
     # Bouton pour lancer le traitement des données et l'affichage
@@ -140,7 +141,7 @@ def lancement():
         st.success("Données chargées et prétraitées avec succès !")
         
         st.subheader("Aperçu du DataFrame après prétraitement :")
-        st.dataframe(st.session_state['df'].sample(10)) 
+        #st.dataframe(st.session_state['df'].sample(10)) 
         
         st.subheader("Paramètres de modélisation :")
         st.write(f"**Date de séparation (split_date) :** {st.session_state['split_date']}")
