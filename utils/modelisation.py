@@ -37,9 +37,15 @@ def intro():
                 <u>Type de problème et tâche de machine learning</u> : 
 
                 Pour rappel, notre projet s’apparente à de la **prédiction de valeurs continues dans une suite temporelle** présentant plusieurs saisonnalités.
-                L'objectif est d'anticiper la demande en énergie en fonction du temps, des conditions météorologiques et d'autres facteurs exogènes. 
+                L'objectif est d'anticiper la demande en énergie par Région en fonction des conditions météorologiques (Températures) et d'autres facteurs exogènes (Temporalités, Populations) 
                 
-                Nous avons donc traité et fusionné l'ensembles des données exposées précédemment dans un dataset regroupant nos variables explicatives :   
+                Nous avons donc traité et fusionné l'ensembles des données exposées précédemment dans un dataset regroupant ces variables explicatives :  
+
+                    - Features: ['TMoy (°C)', 'TMin (°C)', 'TMax (°C)', 'POP (en milliers)', 'year', 'month', 'day_of_week', 'day_of_year', 'week_of_year', 'PlageHoraire']
+                    
+                    - Target : notre variable cible la Consommation (MW). 
+                    
+                    - Les Prévisions étant faites par Régions, ces dernières seront quand à elles, uniquement nos point d'entrée pour chaque entrainement de modèle.
                 """,unsafe_allow_html=True)
     st.write("Echantillon **.sample(10)** : ")
     # --- MODIFICATION ICI ---
@@ -49,7 +55,7 @@ def intro():
         st.info("Veuillez charger les données en cliquant sur le bouton 'Charger et Traiter les Données' dans la section 'Lancement' pour voir un échantillon.")
     # --- FIN MODIFICATION ---
 
-    st.markdown(""" Pour simplifier cette restitution, nous allons entraîner puis comparer nos modèles que sur la **maille horaire**. 
+    st.markdown(""" Pour simplifier cette restitution, nous allons entraîner puis comparer nos modèles uniquement sur la **maille horaire**. 
                 La robustesse à long terme sera limité à la fin de la période de test du jeu de données. 
                 """,unsafe_allow_html=True)
     st.write("---")
@@ -509,25 +515,33 @@ def conclusion():
                 Notre *Simulateur* (voir page dédiée), inlue la mobilisation des 2 modèles pour la démonstration de capacité de prédiction des valeurs futures.
                 """,unsafe_allow_html=True)
     
-    st.write("## ✅ Conclusion et pistes d'améliorations ")    
+    st.write("## ✅ Conclusion et pistes d'améliorations ") 
+    st.write(" Nous avons construit un modèle fonctionnel de prédiction de consommation d’électricité par région en France à l’horizon 10 ans. Il est utilisable de manière opérationnelle via le simulateur. Il est évidemment possible d'améliorer ce projet : ")
     st.success(""" 
-               ### Affiner le modèle de prévision de consommation électrique :
 
-               0. Optimisation du **pré-traitement** : idéalement récupérer et utiliser les scripts de traitement des données de l'ODRE pour gagner du temps sur le datacleaning/consolidation.
-               
-               1. **Enrichir les données d'entrées** : faute de temps, il n'a pas été possible d'enrichir le dataset. Pour autant, précipitations, ensoleillement, jour de congés, poids régionale des industries consommatrices, auraient pu nous fournir des enseignements complémentaires.
-               
-               2. Exploration de **modèles plus avancés** : 
+               #### A) Affiner le modèle de prévision :
 
-                    - Ayant par exemple en tête le Bias négatif côté **Prophet**, on pourrait également imaginer créer un modèle d’assemblage (**stacking**) combinant les avantage de XGBoost à la robustesse et détection de saisonnalités de Prophet.
+               1. Optimisation du **pré-traitement** : idéalement récupérer et utiliser les scripts de traitement des données de l'ODRE pour gagner du temps sur le datacleaning/consolidation et modéliser sur des datas les plus fiables possibles.
+               
+               2. **Enrichir les données d'entrées** : faute de temps, il n'a pas été possible d'enrichir le dataset. Pour autant : précipitations, vitesse du vente, ensoleillement, jours de congés, poids régional des industries consommatrices, prix de l'électricité... 
+               Nombreuses sont les variables qu'il aurait été passionnant de tester.
+               
+               3. Exploration de **modèles plus avancés** : 
+
+                    - Ayant en tête le Bias négatif côté **Prophet**, on peut également imaginer créer un modèle d’assemblage (**stacking**) combinant les avantage de XGBoost à la robustesse et détection de saisonnalités de Prophet.
                             
-                    -  Une piste fortement recommandée est l'exploration des modèles de Deep Learning : avantages significatifs tels que la capacité à gérer de grandes quantités de données. 
+                    - Une autre piste est l'exploration des modèles de **Deep Learning** : avec pour avantages significatifs la capacité à gérer de grandes quantités de données. 
                L'apprentissage de caractéristiques complexes et non linéaires. Une meilleure adaptabilité aux changements et aux tendances. L'efficacité pour les prédictions à long terme. L'automatisation du "feature engineering".
             
                
 
-               ### Finalité Opérationnelle : Rôle du simulateur :
+               #### B) Finalité Opérationnelle : vers un simulateur complet et évolutif
 
-               1. proposer des fenêtres de maintenance pour les moyens de production, en se basant sur des prévisions de consommation plus fiables et plus précises.
-               2. intégrer les scénarios de températures futures (pessimistes et optimistes) et les faire valider par des référents au GIEC, le
+               1. L'objectif de surveillance du phasage production/conso peut être servi encore mieux par l'intégration de données relatives aux **capacité de production**.
+                    - Vérifier le "match" avec les capacités en place, projeter pour le futur l'adéquation avec entre les installations (en place ou en cours de construction). Selon différents scénarios.
+                    - Proposer des **fenêtres de maintenance** pour les moyens de production, en se basant sur des prévisions de consommation plus fiables et plus précises
+               2. La température étant d'ordre 1er en terme d'influence,  faire valider par des référents au GIEC, un modèle de **simulation de température** futures serait idéal. L'assortir d'indice de confiance ou scénarios plus ou moins optimistes.
+               3. Mieux prendre en compte les **import/export d’électricité** aux frontières de la France. La prédiction sur ce thème étant également cruciale. 
+
                """)
+    
