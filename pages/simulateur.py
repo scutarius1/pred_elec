@@ -73,7 +73,7 @@ st.info("""
             et la génération de nos **modèles régionaux de Régression** (RF_NomRegion.joblib, XGB_NomRegion.joblib, etc)
         """)
             
-st.write("C'est maintenant à vous de jouer pour simuler une consommation future régionale 🚀 !" \
+st.write("C'est maintenant  à vous de jouer pour simuler une consommation future régionale 🚀 !" \
 "       ")
     
 st.markdown("<hr style='border: 2px solid #4CAF50;'>", unsafe_allow_html=True)
