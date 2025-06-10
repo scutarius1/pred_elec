@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from datetime import datetime
+from datetime import datetime,timedelta
 import joblib
 import os
 import plotly.express as px
@@ -73,8 +73,7 @@ st.info("""
             et la génération de nos **modèles régionaux de Régression** (RF_NomRegion.joblib, XGB_NomRegion.joblib, etc)
         """)
             
-st.write("C'est maintenant  à vous de jouer pour simuler une consommation future régionale 🚀 !" \
-"       ")
+st.write("C'est maintenant  à vous de jouer pour simuler une consommation future régionale 🚀 ! (par défaut : de J à J+7)")
     
 st.markdown("<hr style='border: 2px solid #4CAF50;'>", unsafe_allow_html=True)
 st.markdown('<h5 style="text-align: center; color: #4CAF50;">🔎 Votre besoin de prévision</h5>', unsafe_allow_html=True)
@@ -84,7 +83,7 @@ col1, col2 = st.columns(2)
 with col1:
     start_date = st.date_input("Date de début", datetime.today(), key="start_date")
 with col2:
-    end_date = st.date_input("Date de fin", datetime.today(), key="end_date")
+    end_date = st.date_input("Date de fin", datetime.today()+ timedelta(days=7), key="end_date")
 
 # Affichage du sélecteur de Régions
 options = ["Auvergne-Rhône-Alpes", "Bourgogne-Franche-Comté",
